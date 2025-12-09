@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA Weak Keys | CTF Writeups</title>
+    <meta name="description" content="Writeup for RSA Weak Keys challenge from Example CTF 2024">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚩</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo">
+                <span class="logo-icon">🚩</span>
+                <span>CTF Writeups</span>
+            </a>
+            <div class="nav-toggle" onclick="toggleNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a>
+            <span>/</span>
+            <a href="../writeups.html">Writeups</a>
+            <span>/</span>
+            <span style="color: var(--primary-purple);">RSA Weak Keys</span>
+        </div>
+    </div>
+
+    <!-- Writeup Content -->
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Crypto</span>
+                <span class="tag">RSA</span>
+                <span class="tag difficulty-easy">Easy</span>
+            </div>
+            <h1>RSA Weak Keys</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>📅 December 2024</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>🏆 Example CTF 2024</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>💯 100 points</span>
+            </div>
+        </header>
+
+        <h2>Challenge Description</h2>
+        <blockquote>
+            "We've encrypted our secret message using RSA. The public key is strong... right?"
+        </blockquote>
+        <p>
+            We're given a public key file and an encrypted message. Our goal is to decrypt the
+            message and recover the flag.
+        </p>
+
+        <h2>Given Files</h2>
+        <p>We received two files:</p>
+        <ul>
+            <li><code>public_key.pem</code> - The RSA public key</li>
+            <li><code>ciphertext.txt</code> - The encrypted flag (base64 encoded)</li>
+        </ul>
+
+        <h2>Analysis</h2>
+        <h3>Extracting the Public Key Parameters</h3>
+        <p>First, let's extract n and e from the public key:</p>
+        <pre><code>from Crypto.PublicKey import RSA
+
+with open('public_key.pem', 'r') as f:
+    key = RSA.import_key(f.read())
+
+n = key.n
+e = key.e
+
+print(f"n = {n}")
+print(f"e = {e}")
+print(f"n bit length: {n.bit_length()}")</code></pre>
+
+        <p>Output:</p>
+        <pre><code>n = 64064959164923876064874945473407049985543119992992738119252749003041961...
+e = 65537
+n bit length: 512</code></pre>
+
+        <p>
+            Interesting! The modulus n is only 512 bits, which is considered weak by modern standards.
+            RSA keys should be at least 2048 bits for security.
+        </p>
+
+        <h2>Factoring the Modulus</h2>
+        <p>
+            A 512-bit RSA modulus can be factored using online databases or dedicated factoring
+            tools. Let's check <a href="http://factordb.com" target="_blank">FactorDB</a>:
+        </p>
+        <pre><code>import requests
+
+response = requests.get(f"http://factordb.com/api?query={n}")
+data = response.json()
+print(data)</code></pre>
+
+        <p>
+            The modulus was already factored in the database! We got our prime factors p and q.
+        </p>
+
+        <h2>Recovering the Private Key</h2>
+        <p>With p and q, we can compute the private exponent d:</p>
+        <pre><code>from Crypto.Util.number import inverse
+
+p = 7991432856706713407  # Factor 1
+q = 8017138972485278083  # Factor 2
+
+# Verify
+assert p * q == n
+
+# Calculate phi(n)
+phi = (p - 1) * (q - 1)
+
+# Calculate private exponent d
+d = inverse(e, phi)
+
+print(f"d = {d}")</code></pre>
+
+        <h2>Decrypting the Flag</h2>
+        <pre><code>from Crypto.Util.number import long_to_bytes
+import base64
+
+# Read ciphertext
+with open('ciphertext.txt', 'r') as f:
+    ciphertext = base64.b64decode(f.read())
+
+# Convert to integer
+c = int.from_bytes(ciphertext, 'big')
+
+# Decrypt: m = c^d mod n
+m = pow(c, d, n)
+
+# Convert to bytes
+plaintext = long_to_bytes(m)
+print(f"Flag: {plaintext.decode()}")</code></pre>
+
+        <h2>Complete Solution Script</h2>
+        <pre><code>from Crypto.PublicKey import RSA
+from Crypto.Util.number import inverse, long_to_bytes
+import base64
+
+# Load public key
+with open('public_key.pem', 'r') as f:
+    key = RSA.import_key(f.read())
+
+n, e = key.n, key.e
+
+# Known factors (from FactorDB)
+p = 7991432856706713407
+q = 8017138972485278083
+
+# Calculate private key
+phi = (p - 1) * (q - 1)
+d = inverse(e, phi)
+
+# Load and decrypt ciphertext
+with open('ciphertext.txt', 'r') as f:
+    c = int.from_bytes(base64.b64decode(f.read()), 'big')
+
+m = pow(c, d, n)
+flag = long_to_bytes(m).decode()
+
+print(f"Flag: {flag}")</code></pre>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">flag{w34k_rs4_k3ys_4r3_d4ng3r0us}</div>
+        </div>
+
+        <h2>Lessons Learned</h2>
+        <ul>
+            <li>RSA key size matters - always use at least 2048 bits</li>
+            <li>FactorDB is an invaluable resource for CTF crypto challenges</li>
+            <li>Understanding RSA mathematics is essential for crypto challenges</li>
+            <li>Small keys can be factored quickly with modern tools</li>
+        </ul>
+
+        <h2>References</h2>
+        <ul>
+            <li><a href="http://factordb.com" target="_blank">FactorDB - Integer Factorization Database</a></li>
+            <li><a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)" target="_blank">Wikipedia - RSA Cryptosystem</a></li>
+        </ul>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">← Back to Writeups</a>
+        </div>
+    </article>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="../index.html" class="logo">
+                        <span class="logo-icon">🚩</span>
+                        <span>CTF Writeups</span>
+                    </a>
+                </div>
+                <div class="footer-links">
+                    <a href="../index.html">Home</a>
+                    <a href="../writeups.html">Writeups</a>
+                    <a href="../about.html">About</a>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.2);">
+                <p style="color: var(--text-muted); font-size: 0.9rem;">
+                    &copy; 2024 CTF Writeups. Happy Hacking! 🎯
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleNav() {
+            document.getElementById('nav-menu').classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
