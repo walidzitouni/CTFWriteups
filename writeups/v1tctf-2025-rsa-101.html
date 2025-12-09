@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA 101 | V1t CTF 2025 | CTF Writeups</title>
+    <meta name="description" content="Writeup for RSA 101 challenge from V1t CTF 2025">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚩</text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">RSA 101</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Crypto</span>
+                <span class="tag">RSA</span>
+                <span class="tag difficulty-medium">Easy-Medium</span>
+            </div>
+            <h1>RSA 101</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>📅 2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>🏆 V1t CTF 2025</span>
+            </div>
+        </header>
+
+        <h2>Overview</h2>
+        <p>You're given RSA parameters and a ciphertext. Factoring <code>n</code> via FactorDB yields a very small prime <code>p = 101</code> and a large prime <code>q</code>. Standard RSA decryption <code>m = c^d mod n</code> returns a number that doesn't decode to ASCII.</p>
+
+        <p>The twist: the original message <code>M</code> was larger than the modulus <code>n</code>, so encryption implicitly reduced it modulo <code>n</code>. After decryption, you get <code>M mod n</code>; to recover <code>M</code>, you add back (a multiple of) <code>n</code>.</p>
+
+        <h2>Given Parameters</h2>
+        <ul>
+            <li><code>p = 101</code></li>
+            <li><code>q = 313846144900241708687128313929756784551</code></li>
+            <li><code>n = 31698460634924412577399959706905435239651</code></li>
+            <li><code>e = 65537</code></li>
+            <li><code>c = 23648999580642514140599125257944114844209</code></li>
+        </ul>
+
+        <h2>Math</h2>
+        <ul>
+            <li>φ(n) = (p − 1)(q − 1)</li>
+            <li>d = e⁻¹ mod φ(n)</li>
+            <li>m_dec = c^d mod n</li>
+            <li>If original M ≥ n, encryption sent M mod n. After decryption we get m_dec = M mod n.</li>
+            <li>Recover M by testing M = m_dec + k·n for small k ≥ 0 until bytes decode. Here k = 1 works.</li>
+        </ul>
+
+        <h2>Solution Script</h2>
+        <pre><code>import sympy as sp
+
+p = 101
+q = 313846144900241708687128313929756784551
+n = 31698460634924412577399959706905435239651
+e = 65537
+c = 23648999580642514140599125257944114844209
+
+# Sanity checks
+assert p * q == n
+assert sp.isprime(p) and sp.isprime(q)
+
+phi = (p - 1) * (q - 1)
+d = pow(e, -1, phi)
+
+m_dec = pow(c, d, n)
+print("m_dec =", m_dec)
+
+# Try adding multiples of n until it decodes
+def try_decode(x: int):
+    try:
+        h = hex(x)[2:]
+        if len(h) % 2:
+            h = "0" + h
+        return bytes.fromhex(h).decode()
+    except Exception:
+        return None
+
+flag = None
+for k in range(0, 5):
+    candidate = m_dec + k * n
+    s = try_decode(candidate)
+    if s and s.startswith("v1t{") and s.endswith("}"):
+        flag = s
+        print("k =", k, "->", flag)
+        break
+
+assert flag is not None</code></pre>
+
+        <h2>Why This Works</h2>
+        <ul>
+            <li>RSA encrypts modulo <code>n</code>. If the original message <code>M</code> is larger than <code>n</code>, the actual encrypted value is based on <code>M mod n</code>.</li>
+            <li>Decryption returns the reduced message. Adding one modulus (or a few) reconstructs a valid preimage that maps to ASCII.</li>
+        </ul>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">v1t{RSA_101_b4by}</div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">← Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>

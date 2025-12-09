@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Addition | AmateursCTF 2025 | CTF Writeups</title>
+    <meta name="description" content="Writeup for Addition crypto challenge from AmateursCTF 2025 - Franklin-Reiter Attack">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚩</text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">Addition</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Crypto</span>
+                <span class="tag">RSA</span>
+                <span class="tag">Franklin-Reiter</span>
+                <span class="tag difficulty-hard">Hard</span>
+            </div>
+            <h1>crypto/addition</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>📅 2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>🏆 AmateursCTF 2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>💯 330 pts / 17 solves</span>
+            </div>
+        </header>
+
+        <h2>Challenge Overview</h2>
+        <blockquote>"it does addition"</blockquote>
+        <p>The server provides RSA with e=3 and an additive relation between encryptions:</p>
+        <ul>
+            <li>The secret flag is encoded as an integer F</li>
+            <li>The server computes: c_s = (F + s)³ mod n</li>
+            <li>We control s</li>
+        </ul>
+        <p>This matches the <strong>Franklin–Reiter related-message attack</strong> on RSA with e=3.</p>
+
+        <h2>Crypto Background: Franklin–Reiter (e = 3)</h2>
+        <p>For two related plaintexts:</p>
+        <ul>
+            <li>C₁ = M³ mod n</li>
+            <li>C₂ = (M + S)³ mod n</li>
+        </ul>
+        <p>With known S, there's a closed-form solution:</p>
+        <pre><code>M = S · (2C₁ + C₂ - S³) · (C₂ - C₁ + 2S³)⁻¹ (mod n)</code></pre>
+
+        <h2>Attack Plan</h2>
+        <ol>
+            <li>Query with s=0 → candidates for C₁</li>
+            <li>Query with s=1 → candidates for C₂</li>
+            <li>Brute-force all (c1, c2) pairs</li>
+            <li>For each candidate m, check if pow(m, 3, n) == c1</li>
+            <li>If valid, extract the flag from m</li>
+        </ol>
+
+        <h2>Exploit Script</h2>
+        <pre><code>from pwn import *
+from Crypto.Util.number import inverse, long_to_bytes
+import ast
+
+def solve_franklin_reiter(c1, c2, s, n):
+    try:
+        num = s * (2 * c1 + c2 - s**3)
+        den = c2 - c1 + 2 * s**3
+        den_inv = inverse(den, n)
+        return (num * den_inv) % n
+    except ValueError:
+        return None
+
+r = remote('amt.rs', 42963)
+line = r.recvline().decode().strip()
+n, e = ast.literal_eval(line.split('=')[1].strip())
+
+c_zeroes, c_ones = [], []
+for _ in range(400):
+    r.sendlineafter(b'scramble the flag: ', b'0')
+    r.recvline()
+    c_zeroes.append(int(r.recvline().decode().split('=')[1]))
+
+    r.sendlineafter(b'scramble the flag: ', b'1')
+    r.recvline()
+    c_ones.append(int(r.recvline().decode().split('=')[1]))
+
+r.close()
+
+for c1 in c_zeroes:
+    for c2 in c_ones:
+        m = solve_franklin_reiter(c1, c2, 1, n)
+        if m and pow(m, 3, n) == c1:
+            flag_long = m >> 256
+            print(long_to_bytes(flag_long, 72).rstrip(b'\x00').decode())
+            exit()</code></pre>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">amateursCTF{1_h0p3_you_didnT_qU3ry_Th3_s3RVer_100k_tim3s_1b9490c255fe83}</div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">← Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon">🚩</span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>
