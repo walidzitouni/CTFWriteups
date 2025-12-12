@@ -43,6 +43,7 @@
                 <button class="filter-btn active" onclick="filterByCategory('all')">All</button>
                 <button class="filter-btn" onclick="filterByCategory('web')">Web</button>
                 <button class="filter-btn" onclick="filterByCategory('crypto')">Crypto</button>
+                <button class="filter-btn" onclick="filterByCategory('pwn')">PWN</button>
                 <button class="filter-btn" onclick="filterByCategory('forensics')">Forensics</button>
                 <button class="filter-btn" onclick="filterByCategory('misc')">Misc</button>
             </div>
@@ -345,6 +346,55 @@
                             <span class="tag">Web</span>
                             <span class="tag">HTTP Headers</span>
                             <span class="tag difficulty-easy">Easy</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- NextHunt CTF -->
+                <a href="writeups/nexthunt-calculator.html" class="writeup-card" data-category="web" data-title="Calculator">
+                    <div class="writeup-header">
+                        <span class="writeup-ctf">NextHunt CTF</span>
+                        <h3 class="writeup-title">Calculator</h3>
+                        <div class="writeup-meta"><span>2025</span><span>10 min</span></div>
+                    </div>
+                    <div class="writeup-body">
+                        <p class="writeup-excerpt">Server-side JavaScript injection via template literals to bypass keyword filters and achieve RCE.</p>
+                        <div class="writeup-tags">
+                            <span class="tag">Web</span>
+                            <span class="tag">SSJI</span>
+                            <span class="tag difficulty-medium">Medium</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="writeups/nexthunt-secure-storage.html" class="writeup-card" data-category="web" data-title="Secure Storage">
+                    <div class="writeup-header">
+                        <span class="writeup-ctf">NextHunt CTF</span>
+                        <h3 class="writeup-title">Secure Storage</h3>
+                        <div class="writeup-meta"><span>2025</span><span>15 min</span></div>
+                    </div>
+                    <div class="writeup-body">
+                        <p class="writeup-excerpt">Path traversal in Go app, then known-plaintext attack on XOR encryption to recover the flag.</p>
+                        <div class="writeup-tags">
+                            <span class="tag">Web</span>
+                            <span class="tag">Path Traversal</span>
+                            <span class="tag difficulty-medium">Medium</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="writeups/nexthunt-ghostnote.html" class="writeup-card" data-category="pwn" data-title="GhostNote">
+                    <div class="writeup-header">
+                        <span class="writeup-ctf">NextHunt CTF</span>
+                        <h3 class="writeup-title">GhostNote</h3>
+                        <div class="writeup-meta"><span>2025</span><span>12 min</span></div>
+                    </div>
+                    <div class="writeup-body">
+                        <p class="writeup-excerpt">Heap UAF vulnerability leading to tcache poisoning and __free_hook overwrite for shell.</p>
+                        <div class="writeup-tags">
+                            <span class="tag">PWN</span>
+                            <span class="tag">Heap</span>
+                            <span class="tag difficulty-medium">Medium</span>
                         </div>
                     </div>
                 </a>
