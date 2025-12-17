@@ -1,9 +1,26 @@
-# About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
+# About Me
 
-::github{repo="saicaca/fuwari"}
+Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 
-> ### Sources of images used in this site
-> - [Unsplash](https://unsplash.com/)
-> - [星と少女](https://www.pixiv.net/artworks/108916539) by [Stella](https://www.pixiv.net/users/93273965)
-> - [Rabbit - v1.4 Showcase](https://civitai.com/posts/586908) by [Rabbit_YourMajesty](https://civitai.com/user/Rabbit_YourMajesty)
+## What I Do
+
+- Capture The Flag (CTF) competitions
+- Security research & vulnerability analysis
+- Web exploitation, cryptography, binary exploitation
+- Sharing knowledge through writeups
+
+## Skills
+
+- **Web Security**: XSS, SQLi, SSRF, SSTI, JWT attacks
+- **Cryptography**: RSA, AES, hash cracking
+- **Binary Exploitation**: Buffer overflows, heap exploitation, ROP
+- **Forensics**: Network analysis, file recovery, steganography
+
+## Connect With Me
+
+- [GitHub](https://github.com/walidzitouni)
+- [LinkedIn](https://www.linkedin.com/in/walid-zitouni/)
+
+---
+
+> "Hack the planet, share the knowledge."
