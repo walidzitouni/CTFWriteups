@@ -13,8 +13,6 @@ Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 
 - **Web Security**: XSS, SQLi, SSRF, SSTI, JWT attacks
 - **Cryptography**: RSA, AES, hash cracking
-- **Binary Exploitation**: Buffer overflows, heap exploitation, ROP
-- **Forensics**: Network analysis, file recovery, steganography
 
 ## Connect With Me
 
@@ -23,4 +21,4 @@ Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 
 ---
 
-> "Hack the planet, share the knowledge."
+> "Tonight's the night. And it's going to happen again and again. It has to happen." - Dexter Morgan
