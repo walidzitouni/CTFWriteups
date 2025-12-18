@@ -14,19 +14,31 @@ Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 - **Web Security**: XSS, SQLi, SSRF, SSTI, JWT attacks
 - **Cryptography**: RSA, AES, hash cracking
 
-## CTF Team
+## CTF Teams
 
-I'm a proud member of **US Sharkbait** - a competitive CTF team.
+### US Sharkbait
 
-<div align="center">
-  <a href="https://ctftime.org/team/171491" target="_blank">
-    <img src="https://ctftime.org/media/cache/b6/4e/b64e64cbc7dcdc590d3ca2200bd348a6.png" alt="US Sharkbait" width="200" />
-  </a>
-  <br />
-  <a href="https://ctftime.org/team/171491" target="_blank">
-    <strong>US Sharkbait on CTFtime</strong>
-  </a>
-</div>
+<a href="https://ctftime.org/team/96818" target="_blank">
+  <img src="https://ctftime.org/media/cache/b6/4e/b64e64cbc7dcdc590d3ca2200bd348a6.png" alt="US Sharkbait" width="120" style="float: left; margin-right: 20px; margin-bottom: 10px;" />
+</a>
+
+I'm a member of **[US Sharkbait](https://ctftime.org/team/96818)**, a competitive CTF team where we hunt flags every weekend. I specialize in **Web Exploitation** and **Cryptography** challenges, helping the team tackle complex security puzzles and climb the CTFtime rankings.
+
+<div style="clear: both;"></div>
+
+---
+
+### Club DefenSys - ENSAO
+
+<a href="#" target="_blank">
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzciZ7vEEsn-9ftpRWWhB_sfGAu-lKoaOrDA&s" alt="Club DefenSys" width="120" style="float: left; margin-right: 20px; margin-bottom: 10px;" />
+</a>
+
+I'm a **Staff Member** at **Club DefenSys**, the cybersecurity club of ENSAO (École Nationale des Sciences Appliquées d'Oujda). As part of the organizing team, I help run CTF competitions and security events for students. In 2025, I participated in organizing the school's CTF event, promoting cybersecurity awareness and skills among fellow students.
+
+<div style="clear: both;"></div>
+
+---
 
 ## Connect With Me
 
