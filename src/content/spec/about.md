@@ -18,6 +18,7 @@ Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 
 - [GitHub](https://github.com/walidzitouni)
 - [LinkedIn](https://www.linkedin.com/in/walid-zitouni/)
+- [Twitter/X](https://x.com/walidzitouni04)
 
 ---
 
