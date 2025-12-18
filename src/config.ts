@@ -51,7 +51,7 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.About,
 		{
 			name: "GitHub",
-			url: "https://github.com/walidzitouni/CTFWriteups",
+			url: "https://github.com/walidzitouni",
 			external: true,
 		},
 	],
@@ -65,7 +65,7 @@ export const profileConfig: ProfileConfig = {
 		{
 			name: "GitHub",
 			icon: "fa6-brands:github",
-			url: "https://github.com/walidzitouni/CTFWriteups",
+			url: "https://github.com/walidzitouni",
 		},
 		{
 			name: "LinkedIn",
@@ -74,8 +74,8 @@ export const profileConfig: ProfileConfig = {
 		},
 		{
 			name: "Twitter",
-			icon: "fa6-brands:twitter",
-			url: "https://twitter.com",
+			icon: "fa6-brands:x-twitter",
+			url: "https://x.com/walidzitouni04",
 		},
 	],
 };
