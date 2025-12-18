@@ -53,10 +53,26 @@ const mainPanelTop = siteConfig.banner.enable
 
 <!-- Banner -->
 {siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                  src={siteConfig.banner.src} position={siteConfig.banner.position}
-    >
-    </ImageWrapper>
+    {siteConfig.banner.video ? (
+        <div id="banner" class="overflow-hidden relative h-full transition duration-700 opacity-0 scale-105">
+            <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
+            <video
+                autoplay
+                loop
+                muted
+                playsinline
+                class="w-full h-full object-cover"
+                style={`object-position: ${siteConfig.banner.position || 'center'}`}
+            >
+                <source src={siteConfig.banner.src} type="video/mp4" />
+            </video>
+        </div>
+    ) : (
+        <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+                      src={siteConfig.banner.src} position={siteConfig.banner.position}
+        >
+        </ImageWrapper>
+    )}
 </div>}
 
 <!-- Main content -->
