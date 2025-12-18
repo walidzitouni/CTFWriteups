@@ -6,7 +6,7 @@ Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 
 - Capture The Flag (CTF) competitions
 - Security research & vulnerability analysis
-- Web exploitation, cryptography, binary exploitation
+- Web exploitation and cryptography
 - Sharing knowledge through writeups
 
 ## Skills
