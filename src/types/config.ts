@@ -24,6 +24,7 @@ export type SiteConfig = {
 		enable: boolean;
 		src: string;
 		position?: "top" | "center" | "bottom";
+		video?: boolean; // Set to true if src is a video URL
 		credit: {
 			enable: boolean;
 			text: string;

@@ -17,12 +17,13 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		src: "https://images.unsplash.com/photo-1642201344145-0d49517e76e7?q=80&w=1223&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+		src: "https://motionbgs.com/media/8830/vagabond-path-of-blades.960x540.mp4",
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
+		video: true, // Enable video background
 		credit: {
-			enable: true, // Display the credit text of the banner image
-			text: "Unsplash", // Credit text to be displayed
-			url: "https://unsplash.com", // (Optional) URL link to the original artwork or artist's page
+			enable: true, // Display the credit text of the banner video
+			text: "MotionBgs", // Credit text to be displayed
+			url: "https://motionbgs.com", // (Optional) URL link to the original artwork or artist's page
 		},
 	},
 	toc: {
@@ -58,7 +59,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.jpg",
+	avatar: "assets/images/avatar.png",
 	name: "Daryx",
 	bio: "Capturing Flags, Sharing Knowledge. Security researcher and CTF enthusiast.",
 	links: [
