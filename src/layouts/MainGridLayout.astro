@@ -64,7 +64,7 @@ const mainPanelTop = siteConfig.banner.enable
                 class="w-full h-full object-cover"
                 style={`object-position: ${siteConfig.banner.position || 'center'}`}
             >
-                <source src={siteConfig.banner.src} type="video/mp4" />
+                <source src={siteConfig.banner.src} type={siteConfig.banner.src.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
             </video>
         </div>
     ) : (
