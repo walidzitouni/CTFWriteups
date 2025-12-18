@@ -17,13 +17,13 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		src: "https://motionbgs.com/media/8830/vagabond-path-of-blades.960x540.mp4",
+		src: "https://moewalls.com/wp-content/uploads/preview/2025/faf47a47420ba399f0fe70311d390f4088ed396f.webm",
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		video: true, // Enable video background
 		credit: {
 			enable: true, // Display the credit text of the banner video
-			text: "MotionBgs", // Credit text to be displayed
-			url: "https://motionbgs.com", // (Optional) URL link to the original artwork or artist's page
+			text: "MoeWalls", // Credit text to be displayed
+			url: "https://moewalls.com", // (Optional) URL link to the original artwork or artist's page
 		},
 	},
 	toc: {
