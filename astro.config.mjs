@@ -26,8 +26,8 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://walidzitouni.github.io",
-	base: "/CTFWriteups/",
+	site: "https://ctf-writeups.vercel.app",
+	base: "/",
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
