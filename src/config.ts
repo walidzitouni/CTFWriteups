@@ -45,6 +45,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		{
+			name: "R3XSS",
+			url: "/r3xss/",
+			external: false,
+		},
+		{
 			name: "Resources",
 			url: "/resources/",
 			external: false,
