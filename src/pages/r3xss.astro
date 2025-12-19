@@ -498,44 +498,54 @@ element.insertAdjacentHTML()</code>
     </div>
 </MainGridLayout>
 
-<script>
-    const passwordGate = document.getElementById('password-gate');
-    const protectedContent = document.getElementById('protected-content');
-    const passwordInput = document.getElementById('password-input') as HTMLInputElement;
-    const unlockBtn = document.getElementById('unlock-btn');
-    const lockBtn = document.getElementById('lock-btn');
-    const errorMsg = document.getElementById('error-msg');
+<script is:inline>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordGate = document.getElementById('password-gate');
+        const protectedContent = document.getElementById('protected-content');
+        const passwordInput = document.getElementById('password-input');
+        const unlockBtn = document.getElementById('unlock-btn');
+        const lockBtn = document.getElementById('lock-btn');
+        const errorMsg = document.getElementById('error-msg');
 
-    // Check if already unlocked
-    if (sessionStorage.getItem('r3xss_unlocked') === 'true') {
-        passwordGate?.classList.add('hidden');
-        protectedContent?.classList.remove('hidden');
-    }
-
-    unlockBtn?.addEventListener('click', async () => {
-        const password = passwordInput?.value;
-        if (password === 'DaryxXSS_1337') {
-            sessionStorage.setItem('r3xss_unlocked', 'true');
-            passwordGate?.classList.add('hidden');
-            protectedContent?.classList.remove('hidden');
-            errorMsg?.classList.add('hidden');
-        } else {
-            errorMsg?.classList.remove('hidden');
-            passwordInput.value = '';
-            passwordInput?.focus();
+        // Check if already unlocked
+        if (sessionStorage.getItem('r3xss_unlocked') === 'true') {
+            if (passwordGate) passwordGate.classList.add('hidden');
+            if (protectedContent) protectedContent.classList.remove('hidden');
         }
-    });
 
-    passwordInput?.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            unlockBtn?.click();
+        if (unlockBtn) {
+            unlockBtn.addEventListener('click', function() {
+                const password = passwordInput ? passwordInput.value : '';
+                if (password === 'DaryxXSS_1337') {
+                    sessionStorage.setItem('r3xss_unlocked', 'true');
+                    if (passwordGate) passwordGate.classList.add('hidden');
+                    if (protectedContent) protectedContent.classList.remove('hidden');
+                    if (errorMsg) errorMsg.classList.add('hidden');
+                } else {
+                    if (errorMsg) errorMsg.classList.remove('hidden');
+                    if (passwordInput) {
+                        passwordInput.value = '';
+                        passwordInput.focus();
+                    }
+                }
+            });
         }
-    });
 
-    lockBtn?.addEventListener('click', () => {
-        sessionStorage.removeItem('r3xss_unlocked');
-        protectedContent?.classList.add('hidden');
-        passwordGate?.classList.remove('hidden');
-        passwordInput.value = '';
+        if (passwordInput) {
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    if (unlockBtn) unlockBtn.click();
+                }
+            });
+        }
+
+        if (lockBtn) {
+            lockBtn.addEventListener('click', function() {
+                sessionStorage.removeItem('r3xss_unlocked');
+                if (protectedContent) protectedContent.classList.add('hidden');
+                if (passwordGate) passwordGate.classList.remove('hidden');
+                if (passwordInput) passwordInput.value = '';
+            });
+        }
     });
 </script>
