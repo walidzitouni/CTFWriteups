@@ -150,6 +150,7 @@ A curated collection of tools, platforms, and resources for CTF competitions and
 | [PayloadsAllTheThings](https://github.com/swisskyrepo/PayloadsAllTheThings) | Web attack payloads |
 | [HackTricks](https://book.hacktricks.xyz/) | Pentesting methodology |
 | [OWASP Cheat Sheet](https://cheatsheetseries.owasp.org/) | Security best practices |
+|[Search CTF Writeups](https://ctfsearch.hackmap.win/) | CTF DataBase |
 
 ---
 
