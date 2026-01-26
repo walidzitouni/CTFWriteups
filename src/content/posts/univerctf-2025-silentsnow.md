@@ -23,20 +23,20 @@ draft: false
 
 The Snow-Post Owl Society website has been corrupted by malicious code, preventing the midnight delivery of festival updates. The goal is to hack the official website and bypass the corrupted code to trigger a mass resend of the latest article.
 
-![Challenge Homepage](/images/writeups/silentsnow/homepage.png)
+![Challenge Homepage](/images/writeups/silentsnow/1.png)
 
 The challenge provides a WordPress-based application with:
 - Custom theme: `my-theme`
 - Custom plugin: `my-plugin`
 - Docker environment with flag at `/flag.txt`
 
-![WordPress Structure](/images/writeups/silentsnow/structure.png)
+![WordPress Structure](/images/writeups/silentsnow/2.png)
 
 ## Vulnerability Discovery
 
 **Location:** `/src/plugins/my-plugin/my-plugin.php:110`
 
-![Vulnerable Code](/images/writeups/silentsnow/vuln-code.png)
+![Vulnerable Code](/images/writeups/silentsnow/3.png)
 
 The code uses `$_POST['my_plugin_action']` directly as the WordPress option name in `update_option()` without any validation or sanitization. This allows an attacker to modify **ANY** WordPress option.
 
@@ -44,13 +44,13 @@ I found also:
 
 ### 1. Auto-login Feature
 
-![Auto-login Feature](/images/writeups/silentsnow/autologin.png)
+![Auto-login Feature](/images/writeups/silentsnow/4.png)
 
 ### 2. Admin Context Bypass
 
 Endpoint for the settings!
 
-![Admin Bypass](/images/writeups/silentsnow/admin-bypass.png)
+![Admin Bypass](/images/writeups/silentsnow/5.png)
 
 Takes a GET param `settings`.
 
@@ -66,11 +66,11 @@ curl -s "http://154.57.164.79:30430/wp-admin/admin-ajax.php?settings"
 
 #### Preview:
 
-![Settings Page](/images/writeups/silentsnow/settings-page.png)
+![Settings Page](/images/writeups/silentsnow/6.png)
 
 This returns the settings form with a valid nonce: `5602f77aca`
 
-![Nonce](/images/writeups/silentsnow/nonce.png)
+![Nonce](/images/writeups/silentsnow/7.png)
 
 ### Step 2: Enable User Registration
 
@@ -84,7 +84,7 @@ curl -s "http://154.57.164.79:30430/wp-admin/admin-ajax.php?settings" -X POST \
   -d "mode=1"
 ```
 
-![Enable Registration](/images/writeups/silentsnow/enable-registration.png)
+![Enable Registration](/images/writeups/silentsnow/8.png)
 
 **Result:** WordPress option `users_can_register` set to `1`
 
@@ -105,7 +105,7 @@ curl -s "http://154.57.164.79:30430/wp-admin/admin-ajax.php?settings" -X POST \
   -d "mode=administrator"
 ```
 
-![Set Admin Role](/images/writeups/silentsnow/set-admin-role.png)
+![Set Admin Role](/images/writeups/silentsnow/9.png)
 
 ### Step 4: Register New Admin User
 
