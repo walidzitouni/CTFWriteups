@@ -16,6 +16,18 @@ Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
 
 ## CTF Teams
 
+### CYBERdUNE
+
+<a href="https://ctftime.org/team/409835" target="_blank">
+  <img src="https://ctftime.org/media/cache/89/42/89429fd1734871dc1cb28af340702a39.png" alt="CYBERdUNE" width="120" style="float: left; margin-right: 20px; margin-bottom: 10px;" />
+</a>
+
+I'm a member of **[CYBERdUNE](https://ctftime.org/team/409835)**, currently ranked **#1 in Morocco** and **#7 worldwide** on CTFtime. We compete in international CTF competitions, tackling challenges across all categories and pushing the limits of competitive cybersecurity.
+
+<div style="clear: both;"></div>
+
+---
+
 ### US Sharkbait
 
 <a href="https://ctftime.org/team/96818" target="_blank">
