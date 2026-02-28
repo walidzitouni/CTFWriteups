@@ -1,22 +1,12 @@
 
-title: "UVT CTF - Seas Side Contraband"
-published: 2026-02-27
-description: "TE.CL HTTP Request Smuggling to bypass 403, chained with SSRF to scan internal network and discover hidden file server containing the flag"
-image: ![sea-side](src/assets/images/sea-side.png)
-tags: ["Web", "HTTP Smuggling", "SSRF", "Request Smuggling", "TE.CL", "CTF"]
-category: Web
-draft: false
+# "UVT CTF - Seas Side Contraband"
+#### Published: 2026-02-27
+#### Description: "TE.CL HTTP Request Smuggling to bypass 403, chained with SSRF to scan internal network and discover hidden file server containing the flag"
+#### Tags: ["Web", "HTTP Smuggling", "SSRF", "Request Smuggling", "TE.CL", "CTF"]
+#### Category: Web
+#### Draft: false
 
-
-## Challenge Information
-
-| Field | Value |
-|-------|-------|
-| **Name** | Seas Side Contraband |
-| **Category** | Web |
-| **Author** | AmonRa |
-| **Solved by** | Daryx |
-| **Flag Format** | `UVT{..}` |
+ ![sea-side](https://raw.githubusercontent.com/walidzitouni/CTFWriteups/refs/heads/main/src/assets/images/sea-side.png?token=GHSAT0AAAAAADWR57IQRED2QIBRGQQHYIZA2NCRVZA)
 
 ## The Setup
 
