@@ -59,7 +59,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.jpg",
+	avatar: "assets/images/avatar.png",
 	name: "Daryx",
 	bio: "Capturing Flags, Sharing Knowledge. Security researcher and CTF enthusiast.",
 	links: [

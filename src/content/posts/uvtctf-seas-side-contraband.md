@@ -1,4 +1,3 @@
-
 # "UVT CTF - Seas Side Contraband"
 #### Published: 2026-02-27
 #### Description: "TE.CL HTTP Request Smuggling to bypass 403, chained with SSRF to scan internal network and discover hidden file server containing the flag"
@@ -7,6 +6,7 @@
 #### Draft: false
 
  ![sea-side](https://raw.githubusercontent.com/walidzitouni/CTFWriteups/refs/heads/main/src/assets/images/sea-side.png?token=GHSAT0AAAAAADWR57IQRED2QIBRGQQHYIZA2NCRVZA)
+
 
 ## The Setup
 
