@@ -1,0 +1,39 @@
+---
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getTagList } from "../utils/content-utils";
+import { getTagUrl } from "../utils/url-utils";
+
+const tags = await getTagList();
+const maxCount = Math.max(...tags.map(t => t.count));
+---
+
+<MainGridLayout title="Tags" description="Browse all tags">
+    <div class="card-base p-6 onload-animation" style="animation-delay: calc(var(--content-delay))">
+        <h2 class="text-lg font-bold text-white/80 mb-6 flex items-center gap-2">
+            <Icon name="material-symbols:tag-rounded" class="text-xl text-[var(--primary)]" />
+            All Tags
+        </h2>
+        <div class="flex flex-wrap gap-3 justify-center">
+            {tags.map(t => {
+                const scale = 0.75 + (t.count / maxCount) * 0.5;
+                const opacity = 0.5 + (t.count / maxCount) * 0.5;
+                return (
+                    <a href={getTagUrl(t.name)}
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                              bg-white/5 hover:bg-[var(--primary)]/10 border border-white/5
+                              hover:border-[var(--primary)]/30 transition-all group"
+                       style={`font-size: ${scale}rem;`}>
+                        <span class="text-white/60 group-hover:text-[var(--primary)] transition"
+                              style={`opacity: ${opacity};`}>
+                            #{t.name}
+                        </span>
+                        <span class="text-[10px] text-white/25 bg-white/5 px-1.5 py-0.5 rounded-full">
+                            {t.count}
+                        </span>
+                    </a>
+                );
+            })}
+        </div>
+    </div>
+</MainGridLayout>
