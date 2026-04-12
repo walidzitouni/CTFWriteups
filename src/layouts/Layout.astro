@@ -2,14 +2,8 @@
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import "@fontsource/source-sans-pro/400.css";
-import "@fontsource/source-sans-pro/600.css";
-import "@fontsource/source-sans-pro/700.css";
-import "@fontsource/lato/400.css";
-import "@fontsource/lato/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
-import MouseTrail from "@components/MouseTrail.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
@@ -79,8 +73,7 @@ const bannerOffset =
 ---
 
 <!DOCTYPE html>
-<html lang={siteLang} class="dark bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
-	  style="font-family: 'Source Sans Pro', 'Roboto', sans-serif;"
+<html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
 	  data-overlayscrollbars-initialize
 >
 	<head>
@@ -118,12 +111,26 @@ const bannerOffset =
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
 		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
-			// Force dark mode always
-			document.documentElement.classList.add('dark');
-			localStorage.setItem('theme', DARK_MODE);
+			// Load the theme from local storage
+			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+			switch (theme) {
+				case LIGHT_MODE:
+					document.documentElement.classList.remove('dark');
+					break
+				case DARK_MODE:
+					document.documentElement.classList.add('dark');
+					break
+				case AUTO_MODE:
+					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+			}
 
-			// Force green/teal hue
-			document.documentElement.style.setProperty('--hue', '160');
+			// Load the hue from local storage
+			const hue = localStorage.getItem('hue') || configHue;
+			document.documentElement.style.setProperty('--hue', hue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
@@ -146,7 +153,6 @@ const bannerOffset =
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>
-		<MouseTrail />
 		<slot />
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->

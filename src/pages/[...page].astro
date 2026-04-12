@@ -1,100 +1,23 @@
 ---
 import type { GetStaticPaths } from "astro";
-import type { CollectionEntry } from "astro:content";
 import Pagination from "../components/control/Pagination.astro";
-import PostCard from "../components/PostCard.astro";
-import CategoryCard from "../components/CategoryCard.astro";
+import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
-import { getSortedPosts, getCategoryList } from "../utils/content-utils";
-import { getPostUrlBySlug } from "../utils/url-utils";
+import { getSortedPosts } from "../utils/content-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
 	return paginate(allBlogPosts, { pageSize: PAGE_SIZE });
 }) satisfies GetStaticPaths;
+// https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
 const { page } = Astro.props;
-const isFirstPage = page.currentPage === 1;
-const categories = await getCategoryList();
 
-// Map categories to our 4 main groups
-const categoryGroups = [
-    {
-        name: "Offensive Security",
-        image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
-        match: ["HackTheBox", "HackerLab"],
-    },
-    {
-        name: "CTF Writeups",
-        image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80",
-        match: ["AmateursCTF 2025", "V1t CTF 2025", "QnQSec CTF 2025", "NextHunt CTF", "PatriotCTF 2025", "BuckeyeCTF 2025", "AKASEC 2025", "CTF Writeups"],
-    },
-    {
-        name: "Web Security",
-        image: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=800&q=80",
-        match: ["Web"],
-    },
-    {
-        name: "Research",
-        image: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&q=80",
-        match: ["CVE Analysis", "Reverse Engineering"],
-    },
-];
-
-// Count posts per group
-const groupCounts = categoryGroups.map(group => {
-    const count = categories
-        .filter(c => group.match.includes(c.name))
-        .reduce((sum, c) => sum + c.count, 0);
-    return { ...group, count };
-});
-
-let delay = 0;
-const interval = 50;
+const len = page.data.length;
 ---
 
 <MainGridLayout>
-    {isFirstPage && (
-        <!-- Category Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 onload-animation" style="animation-delay: calc(var(--content-delay))">
-            {groupCounts.map((group, i) => (
-                <CategoryCard
-                    name={group.name}
-                    count={group.count}
-                    url={`/archive/?category=${encodeURIComponent(group.match[0])}`}
-                    image={group.image}
-                    class="onload-animation"
-                    style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms)`}
-                />
-            ))}
-        </div>
-
-        <!-- Recent Posts Heading -->
-        <div class="flex items-center gap-3 mb-4 onload-animation" style={`animation-delay: calc(var(--content-delay) + 350ms)`}>
-            <h2 class="text-lg font-bold text-white/80">Recent Posts</h2>
-            <div class="flex-1 h-px bg-white/8"></div>
-        </div>
-    )}
-
-    <!-- Post Feed -->
-    <div class="transition flex flex-col rounded-[var(--radius-large)] bg-[var(--card-bg)] py-1 md:py-0 md:bg-transparent md:gap-4 mb-4">
-        {page.data.map((entry: CollectionEntry<"posts">) => (
-            <PostCard
-                entry={entry}
-                title={entry.data.title}
-                tags={entry.data.tags}
-                category={entry.data.category}
-                published={entry.data.published}
-                updated={entry.data.updated}
-                url={getPostUrlBySlug(entry.slug)}
-                image={entry.data.image}
-                description={entry.data.description}
-                draft={entry.data.draft}
-                class:list="onload-animation"
-                style={`animation-delay: calc(var(--content-delay) + ${delay++ * interval}ms);`}
-            />
-        ))}
-    </div>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${delay * interval}ms)`}></Pagination>
+    <PostPage page={page}></PostPage>
+    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
 </MainGridLayout>

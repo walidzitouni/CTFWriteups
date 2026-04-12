@@ -1,63 +1,39 @@
 ---
 import { Icon } from "astro-icon/components";
-import { profileConfig, navBarConfig, siteConfig } from "../../config";
-import { LinkPresets } from "../../constants/link-presets";
-import { LinkPreset, type NavBarLink } from "../../types/config";
+import { profileConfig } from "../../config";
 import { url } from "../../utils/url-utils";
 import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
-
-let links: NavBarLink[] = navBarConfig.links.map(
-	(item: NavBarLink | LinkPreset): NavBarLink => {
-		if (typeof item === "number") {
-			return LinkPresets[item];
-		}
-		return item;
-	},
-);
 ---
-<div class="p-5 flex flex-col items-center" style="background-color: var(--sidebar-bg, #1e1e1e);">
-    <!-- Circular Avatar with Chirpy-style border -->
-    <a aria-label="Go to Home" href={url('/')}
-       class="group block w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden
-              hover:scale-[1.05] transition-all mb-4 active:scale-95"
-       style="border: 2px solid rgba(206,206,206,0.9);">
-        <ImageWrapper src={config.avatar || ""} alt="Profile Image" class="w-full h-full object-cover"></ImageWrapper>
+<div class="card-base p-3">
+    <a aria-label="Go to About Page" href={url('/about/')}
+       class="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
+       max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95">
+        <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
+        w-full h-full z-50 flex items-center justify-center">
+            <Icon name="fa6-regular:address-card"
+                  class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl">
+            </Icon>
+        </div>
+        <ImageWrapper src={config.avatar || ""} alt="Profile Image of the Author" class="mx-auto lg:w-full h-full lg:mt-0 "></ImageWrapper>
     </a>
-
-    <!-- Site Title - Chirpy style -->
-    <a href={url('/')} class="font-bold text-xl transition mb-0.5 hover:opacity-80"
-       style="font-family: 'Lato', sans-serif; color: #717070;">
-        {siteConfig.title}
-    </a>
-
-    <!-- Tagline - Chirpy subtitle color -->
-    <div class="text-sm mb-5" style="color: #868686;">{config.bio}</div>
-
-    <!-- Navigation Links - Chirpy horizontal style -->
-    <nav class="flex flex-wrap gap-x-4 gap-y-2 justify-center mb-5">
-        {links.map((l) => (
-            <a href={l.external ? l.url : url(l.url)}
-               target={l.external ? "_blank" : null}
-               class="text-xs font-semibold uppercase tracking-wider transition hover:opacity-100"
-               style="color: #868686;">
-                {l.name}
-            </a>
-        ))}
-    </nav>
-
-    <!-- Divider -->
-    <div class="w-full h-px mb-4" style="background-color: #292929;"></div>
-
-    <!-- Social Icons - Chirpy button style -->
-    <div class="flex gap-3">
-        {config.links.map(item =>
-            <a rel="me" aria-label={item.name} href={item.url} target="_blank"
-               class="w-9 h-9 rounded-full flex items-center justify-center transition"
-               style="background-color: #232328; color: #787878;">
-                <Icon name={item.icon} class="text-[1.1rem]"></Icon>
-            </a>
-        )}
+    <div class="px-2">
+        <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">{config.name}</div>
+        <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
+        <div class="text-center text-neutral-400 mb-2.5 transition">{config.bio}</div>
+        <div class="flex flex-wrap gap-2 justify-center mb-1">
+            {config.links.length > 1 && config.links.map(item =>
+                    <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
+                        <Icon name={item.icon} class="text-[1.5rem]"></Icon>
+                    </a>
+            )}
+            {config.links.length == 1 && <a rel="me" aria-label={config.links[0].name} href={config.links[0].url} target="_blank"
+                                            class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
+                <Icon name={config.links[0].icon} class="text-[1.5rem]"></Icon>
+                {config.links[0].name}
+            </a>}
+        </div>
     </div>
 </div>
+
