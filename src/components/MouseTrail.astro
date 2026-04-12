@@ -61,13 +61,13 @@ function initMouseTrail() {
             // Green/teal glow matching theme
             ctx.beginPath();
             ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(100, 220, 180, ${alpha * 0.6})`;
+            ctx.fillStyle = `rgba(138, 180, 248, ${alpha * 0.6})`;
             ctx.fill();
 
             // Outer glow
             ctx.beginPath();
             ctx.arc(p.x, p.y, size * 2, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(100, 220, 180, ${alpha * 0.15})`;
+            ctx.fillStyle = `rgba(138, 180, 248, ${alpha * 0.15})`;
             ctx.fill();
 
             return p.life < p.maxLife;
