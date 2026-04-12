@@ -2,9 +2,15 @@
 import type { GetStaticPaths } from "astro";
 import Pagination from "../components/control/Pagination.astro";
 import PostPage from "../components/PostPage.astro";
+import CategoryCard from "../components/CategoryCard.astro";
 import { PAGE_SIZE } from "../constants/constants";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../utils/content-utils";
+
+import offensiveImg from "../assets/images/categories/offensive.svg";
+import defensiveImg from "../assets/images/categories/defensive.svg";
+import ctfImg from "../assets/images/categories/ctf.svg";
+import researchImg from "../assets/images/categories/research.svg";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
@@ -13,11 +19,76 @@ export const getStaticPaths = (async ({ paginate }) => {
 // https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
 const { page } = Astro.props;
+const isFirstPage = page.currentPage === 1;
+
+// Count posts per high-level category
+const allPosts = page.data;
+const totalPosts = page.total;
+
+// Define the 4 display categories with their post count logic
+// These are "umbrella" categories — they count posts whose category matches keywords
+const allBlogPosts = await getSortedPosts();
+function countByKeywords(keywords: string[]): number {
+	return allBlogPosts.filter(post => {
+		const cat = (post.data.category || '').toLowerCase();
+		const tags = (post.data.tags || []).map((t: string) => t.toLowerCase());
+		return keywords.some(kw => cat.includes(kw) || tags.some(t => t.includes(kw)));
+	}).length;
+}
+
+const categories = [
+	{
+		title: "Offensive Security",
+		count: countByKeywords(["offensive", "htb", "hackthebox", "pentest", "exploit", "ssti", "rce", "xss", "sqli", "injection", "web"]),
+		color: "#ff2d55",
+		image: offensiveImg,
+		href: "/archive/category/Web/",
+	},
+	{
+		title: "Defensive Security",
+		count: countByKeywords(["defensive", "defense", "blue team", "forensic", "incident", "soc", "dfir"]),
+		color: "#4a9eff",
+		image: defensiveImg,
+		href: "/archive/",
+	},
+	{
+		title: "CTF Writeups",
+		count: countByKeywords(["ctf", "v1t", "amateur", "patriot", "buckeye", "qnq", "akasec", "nexthunt", "hackerlab", "uvt", "bearcat", "univerctf", "jeanne"]),
+		color: "#ffd700",
+		image: ctfImg,
+		href: "/archive/",
+	},
+	{
+		title: "Research",
+		count: countByKeywords(["research", "cve", "analysis", "reverse"]),
+		color: "#00e676",
+		image: researchImg,
+		href: "/archive/",
+	},
+];
 
 const len = page.data.length;
 ---
 
 <MainGridLayout>
+    {isFirstPage && (
+        <div class="mb-6 onload-animation" style="animation-delay: var(--content-delay)">
+            <h2 class="text-2xl font-bold mb-4 text-[var(--deep-text)] dark:text-white/90">Categories</h2>
+            <div class="flex flex-col gap-4">
+                {categories.map((cat, i) => (
+                    <CategoryCard
+                        title={cat.title}
+                        count={cat.count}
+                        color={cat.color}
+                        image={cat.image}
+                        href={cat.href}
+                        class="onload-animation"
+                        style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms)`}
+                    />
+                ))}
+            </div>
+        </div>
+    )}
     <PostPage page={page}></PostPage>
     <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
 </MainGridLayout>
