@@ -75,15 +75,13 @@ const len = page.data.length;
         <div class="mb-6 onload-animation" style="animation-delay: var(--content-delay)">
             <h2 class="text-2xl font-bold mb-4 text-[var(--deep-text)] dark:text-white/90">Categories</h2>
             <div class="flex flex-col gap-4">
-                {categories.map((cat, i) => (
+                {categories.map((cat) => (
                     <CategoryCard
                         title={cat.title}
                         count={cat.count}
                         color={cat.color}
                         image={cat.image}
                         href={cat.href}
-                        class="onload-animation"
-                        style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms)`}
                     />
                 ))}
             </div>
