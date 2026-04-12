@@ -2,6 +2,11 @@
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import "@fontsource/source-sans-pro/400.css";
+import "@fontsource/source-sans-pro/600.css";
+import "@fontsource/source-sans-pro/700.css";
+import "@fontsource/lato/400.css";
+import "@fontsource/lato/700.css";
 
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import MouseTrail from "@components/MouseTrail.astro";
@@ -74,7 +79,8 @@ const bannerOffset =
 ---
 
 <!DOCTYPE html>
-<html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
+<html lang={siteLang} class="dark bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
+	  style="font-family: 'Source Sans Pro', 'Roboto', sans-serif;"
 	  data-overlayscrollbars-initialize
 >
 	<head>

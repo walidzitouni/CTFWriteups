@@ -17,43 +17,46 @@ let links: NavBarLink[] = navBarConfig.links.map(
 	},
 );
 ---
-<div class="card-base p-5 flex flex-col items-center">
-    <!-- Circular Avatar -->
+<div class="p-5 flex flex-col items-center" style="background-color: var(--sidebar-bg, #1e1e1e);">
+    <!-- Circular Avatar with Chirpy-style border -->
     <a aria-label="Go to Home" href={url('/')}
-       class="group block w-28 h-28 rounded-full overflow-hidden border-2 border-white/10
-              hover:border-[var(--primary)] transition-all mb-4 active:scale-95">
+       class="group block w-[6.5rem] h-[6.5rem] rounded-full overflow-hidden
+              hover:scale-[1.05] transition-all mb-4 active:scale-95"
+       style="border: 2px solid rgba(206,206,206,0.9);">
         <ImageWrapper src={config.avatar || ""} alt="Profile Image" class="w-full h-full object-cover"></ImageWrapper>
     </a>
 
-    <!-- Blog Name -->
-    <a href={url('/')} class="font-bold text-xl text-white/90 hover:text-[var(--primary)] transition mb-1">
+    <!-- Site Title - Chirpy style -->
+    <a href={url('/')} class="font-bold text-xl transition mb-0.5 hover:opacity-80"
+       style="font-family: 'Lato', sans-serif; color: #717070;">
         {siteConfig.title}
     </a>
 
-    <!-- Tagline -->
-    <div class="text-sm text-white/40 mb-5">{config.bio}</div>
+    <!-- Tagline - Chirpy subtitle color -->
+    <div class="text-sm mb-5" style="color: #868686;">{config.bio}</div>
 
-    <!-- Navigation Links - horizontal flow -->
+    <!-- Navigation Links - Chirpy horizontal style -->
     <nav class="flex flex-wrap gap-x-4 gap-y-2 justify-center mb-5">
         {links.map((l) => (
             <a href={l.external ? l.url : url(l.url)}
                target={l.external ? "_blank" : null}
-               class="text-xs font-semibold uppercase tracking-wider text-white/50 hover:text-[var(--primary)] transition">
+               class="text-xs font-semibold uppercase tracking-wider transition hover:opacity-100"
+               style="color: #868686;">
                 {l.name}
             </a>
         ))}
     </nav>
 
     <!-- Divider -->
-    <div class="w-full h-px bg-white/8 mb-4"></div>
+    <div class="w-full h-px mb-4" style="background-color: #292929;"></div>
 
-    <!-- Social Icons -->
+    <!-- Social Icons - Chirpy button style -->
     <div class="flex gap-3">
         {config.links.map(item =>
             <a rel="me" aria-label={item.name} href={item.url} target="_blank"
-               class="w-9 h-9 rounded-lg flex items-center justify-center
-                      text-white/40 hover:text-[var(--primary)] hover:bg-white/5 transition">
-                <Icon name={item.icon} class="text-[1.25rem]"></Icon>
+               class="w-9 h-9 rounded-full flex items-center justify-center transition"
+               style="background-color: #232328; color: #787878;">
+                <Icon name={item.icon} class="text-[1.1rem]"></Icon>
             </a>
         )}
     </div>
