@@ -1,0 +1,55 @@
+---
+import { Icon } from "astro-icon/components";
+import { getSortedPosts, getTagList, getCategoryList } from "../utils/content-utils";
+
+const posts = await getSortedPosts();
+const tags = await getTagList();
+const categories = await getCategoryList();
+
+const totalPosts = posts.length;
+const totalCategories = categories.length;
+const totalTags = tags.length;
+
+// Count web and crypto posts
+const webCount = posts.filter(p => p.data.tags?.includes("Web")).length;
+const cryptoCount = posts.filter(p => p.data.tags?.includes("Crypto")).length;
+const pwnCount = posts.filter(p => p.data.tags?.includes("PWN")).length;
+
+interface Props {
+    class?: string;
+    style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+---
+
+<div class:list={["grid grid-cols-2 md:grid-cols-4 gap-3", className]} style={style}>
+    <div class="card-base px-4 py-5 text-center group hover:scale-[1.02] transition-all duration-200">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <Icon name="material-symbols:flag-rounded" class="text-xl text-[var(--primary)]" />
+        </div>
+        <div class="text-2xl font-bold text-[var(--primary)]">{totalPosts}</div>
+        <div class="text-xs text-black/40 dark:text-white/40 mt-1 uppercase tracking-wider">Writeups</div>
+    </div>
+    <div class="card-base px-4 py-5 text-center group hover:scale-[1.02] transition-all duration-200">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <Icon name="material-symbols:trophy-outline-rounded" class="text-xl" style="color: #ff922b" />
+        </div>
+        <div class="text-2xl font-bold" style="color: #ff922b">{totalCategories}</div>
+        <div class="text-xs text-black/40 dark:text-white/40 mt-1 uppercase tracking-wider">CTF Events</div>
+    </div>
+    <div class="card-base px-4 py-5 text-center group hover:scale-[1.02] transition-all duration-200">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <Icon name="material-symbols:globe" class="text-xl" style="color: #20c997" />
+        </div>
+        <div class="text-2xl font-bold" style="color: #20c997">{webCount}</div>
+        <div class="text-xs text-black/40 dark:text-white/40 mt-1 uppercase tracking-wider">Web Challs</div>
+    </div>
+    <div class="card-base px-4 py-5 text-center group hover:scale-[1.02] transition-all duration-200">
+        <div class="flex items-center justify-center gap-2 mb-2">
+            <Icon name="material-symbols:lock-outline" class="text-xl" style="color: #ffd43b" />
+        </div>
+        <div class="text-2xl font-bold" style="color: #ffd43b">{cryptoCount}</div>
+        <div class="text-xs text-black/40 dark:text-white/40 mt-1 uppercase tracking-wider">Crypto Challs</div>
+    </div>
+</div>
