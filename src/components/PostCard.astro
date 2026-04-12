@@ -41,8 +41,40 @@ const hasCover = image !== undefined && image !== null && image !== "";
 const coverWidth = "28%";
 
 const { remarkPluginFrontmatter } = await entry.render();
+
+// Platform badge config
+const platformColors: Record<string, { bg: string; text: string; short: string }> = {
+	"HackTheBox": { bg: "rgba(159,239,0,0.12)", text: "#9fef00", short: "HTB" },
+	"HackerLab": { bg: "rgba(0,200,255,0.12)", text: "#00c8ff", short: "HL" },
+	"AmateursCTF 2025": { bg: "rgba(255,107,107,0.12)", text: "#ff6b6b", short: "ACTF" },
+	"V1t CTF 2025": { bg: "rgba(255,217,61,0.12)", text: "#ffd93d", short: "V1T" },
+	"QnQSec CTF 2025": { bg: "rgba(107,203,119,0.12)", text: "#6bcb77", short: "QnQ" },
+	"NextHunt CTF": { bg: "rgba(77,150,255,0.12)", text: "#4d96ff", short: "NH" },
+	"PatriotCTF 2025": { bg: "rgba(255,107,107,0.12)", text: "#ff6b6b", short: "PCTF" },
+	"BuckeyeCTF 2025": { bg: "rgba(255,146,43,0.12)", text: "#ff922b", short: "BCTF" },
+	"AKASEC 2025": { bg: "rgba(204,93,232,0.12)", text: "#cc5de8", short: "AKA" },
+	"CVE Analysis": { bg: "rgba(255,68,68,0.12)", text: "#ff4444", short: "CVE" },
+};
+const platformInfo = category && platformColors[category]
+	? platformColors[category]
+	: { bg: "var(--btn-regular-bg)", text: "var(--primary)", short: category ? category.substring(0, 3).toUpperCase() : "N/A" };
+
+// Tag colors
+const tagColorMap: Record<string, string> = {
+	"Web": "#20c997", "Crypto": "#ffd43b", "RSA": "#fab005", "PWN": "#ff6b6b",
+	"Forensics": "#4dabf7", "SSTI": "#ff922b", "RCE": "#f03e3e", "SQLi": "#fd7e14",
+	"CVE": "#ff4444", "Misc": "#868e96",
+};
 ---
 <div class:list={["card-base flex flex-col-reverse md:flex-col w-full rounded-[var(--radius-large)] overflow-hidden relative", className]} style={style}>
+    <!-- Platform badge -->
+    <div class="absolute top-3 right-3 z-20 hidden md:flex items-center gap-1.5">
+        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full backdrop-blur-sm"
+              style={`background-color: ${platformInfo.bg}; color: ${platformInfo.text}; border: 1px solid ${platformInfo.text}30;`}>
+            {platformInfo.short}
+        </span>
+    </div>
+
     <div class:list={["pl-6 md:pl-9 pr-6 md:pr-2 pt-6 md:pt-7 pb-6 relative", {"w-full md:w-[calc(100%_-_52px_-_12px)]": !hasCover, "w-full md:w-[calc(100%_-_var(--coverWidth)_-_12px)]": hasCover}]}>
         <a href={url}
            class="transition group w-full block font-bold mb-3 text-3xl text-90
@@ -64,14 +96,32 @@ const { remarkPluginFrontmatter } = await entry.render();
             { description || remarkPluginFrontmatter.excerpt }
         </div>
 
-        <!-- word count and read time  -->
-        <div class="text-sm text-black/30 dark:text-white/30 flex gap-4 transition">
-            <div>
-                {remarkPluginFrontmatter.words} {" " + i18n(remarkPluginFrontmatter.words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}
+        <!-- tag pills + word count row -->
+        <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex flex-wrap gap-1.5">
+                {tags && tags.slice(0, 3).map((tag) => {
+                    const color = tagColorMap[tag] || "var(--primary)";
+                    return (
+                        <span class="text-[11px] px-2 py-0.5 rounded-md font-medium transition"
+                              style={`background-color: ${color}15; color: ${color};`}>
+                            {tag}
+                        </span>
+                    );
+                })}
+                {tags && tags.length > 3 && (
+                    <span class="text-[11px] px-2 py-0.5 rounded-md text-black/30 dark:text-white/30">
+                        +{tags.length - 3}
+                    </span>
+                )}
             </div>
-            <div>|</div>
-            <div>
-                {remarkPluginFrontmatter.minutes} {" " + i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}
+            <div class="text-sm text-black/30 dark:text-white/30 flex gap-4 transition">
+                <div>
+                    {remarkPluginFrontmatter.words} {" " + i18n(remarkPluginFrontmatter.words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}
+                </div>
+                <div>|</div>
+                <div>
+                    {remarkPluginFrontmatter.minutes} {" " + i18n(remarkPluginFrontmatter.minutes === 1 ? I18nKey.minuteCount : I18nKey.minutesCount)}
+                </div>
             </div>
         </div>
 
