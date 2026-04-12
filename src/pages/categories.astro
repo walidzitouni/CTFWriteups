@@ -1,0 +1,72 @@
+---
+import { Icon } from "astro-icon/components";
+import CategoryCard from "@components/CategoryCard.astro";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { getCategoryList } from "../utils/content-utils";
+
+const categories = await getCategoryList();
+
+// Map categories to visual groups with images
+const categoryGroups = [
+    {
+        name: "Offensive Security",
+        image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80",
+        match: ["HackTheBox", "HackerLab"],
+    },
+    {
+        name: "CTF Writeups",
+        image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80",
+        match: ["AmateursCTF 2025", "V1t CTF 2025", "QnQSec CTF 2025", "NextHunt CTF", "PatriotCTF 2025", "BuckeyeCTF 2025", "AKASEC 2025", "CTF Writeups"],
+    },
+    {
+        name: "Web Security",
+        image: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=800&q=80",
+        match: ["Web"],
+    },
+    {
+        name: "Research",
+        image: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&q=80",
+        match: ["CVE Analysis", "Reverse Engineering"],
+    },
+];
+
+const groupCounts = categoryGroups.map(group => {
+    const count = categories
+        .filter(c => group.match.includes(c.name))
+        .reduce((sum, c) => sum + c.count, 0);
+    return { ...group, count };
+});
+---
+
+<MainGridLayout title="Categories" description="Browse writeups by category">
+    <!-- Main Category Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {groupCounts.map((group, i) => (
+            <CategoryCard
+                name={group.name}
+                count={group.count}
+                url={`/archive/?category=${encodeURIComponent(group.match[0])}`}
+                image={group.image}
+                class="onload-animation"
+                style={`animation-delay: calc(var(--content-delay) + ${i * 80}ms)`}
+            />
+        ))}
+    </div>
+
+    <!-- All Categories List -->
+    <div class="card-base p-6 onload-animation" style={`animation-delay: calc(var(--content-delay) + 400ms)`}>
+        <h2 class="text-lg font-bold text-white/80 mb-4 flex items-center gap-2">
+            <Icon name="material-symbols:category-outline" class="text-xl text-[var(--primary)]" />
+            All Categories
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {categories.map(c => (
+                <a href={c.url}
+                   class="flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/5 transition group">
+                    <span class="text-white/70 group-hover:text-[var(--primary)] transition font-medium">{c.name}</span>
+                    <span class="text-xs text-white/30 bg-white/5 px-2.5 py-1 rounded-full">{c.count}</span>
+                </a>
+            ))}
+        </div>
+    </div>
+</MainGridLayout>
