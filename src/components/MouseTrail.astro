@@ -1,0 +1,96 @@
+---
+// Mouse trail particle effect - purple themed to match site
+---
+
+<canvas id="mouse-trail-canvas"></canvas>
+
+<style>
+  #mouse-trail-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+  }
+</style>
+
+<script>
+const canvas = document.getElementById('mouse-trail-canvas') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d')!;
+
+let mouseX = 0;
+let mouseY = 0;
+let particles: { x: number; y: number; vx: number; vy: number; life: number; maxLife: number; size: number }[] = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  for (let i = 0; i < 2; i++) {
+    particles.push({
+      x: mouseX,
+      y: mouseY,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      life: 1,
+      maxLife: 40 + Math.random() * 20,
+      size: Math.random() * 3 + 1,
+    });
+  }
+});
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Get the hue from the CSS variable
+  const hue = getComputedStyle(document.documentElement).getPropertyValue('--hue').trim() || '280';
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vx *= 0.98;
+    p.vy *= 0.98;
+    p.life++;
+
+    const progress = p.life / p.maxLife;
+    const alpha = 1 - progress;
+
+    if (progress >= 1) {
+      particles.splice(i, 1);
+      continue;
+    }
+
+    const size = p.size * (1 - progress * 0.5);
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
+    ctx.fillStyle = `oklch(0.75 0.14 ${hue} / ${alpha * 0.6})`;
+    ctx.fill();
+
+    // Glow effect
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, size * 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = `oklch(0.75 0.14 ${hue} / ${alpha * 0.15})`;
+    ctx.fill();
+  }
+
+  // Cap particles to prevent memory issues
+  if (particles.length > 200) {
+    particles = particles.slice(-200);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300">
+  <defs>
+    <radialGradient id="bg-research" cx="70%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#004d26" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="glow-research" cx="60%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#00e676" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Japanese-style pattern -->
+    <pattern id="pattern-research" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M30,0 L60,30 L30,60 L0,30 Z" fill="none" stroke="#00e676" stroke-width="0.3" opacity="0.08"/>
+    </pattern>
+  </defs>
+  
+  <!-- Dark base -->
+  <rect width="900" height="300" fill="#0d0d0f"/>
+  
+  <!-- Radial gradient background -->
+  <rect width="900" height="300" fill="url(#bg-research)"/>
+  
+  <!-- Geometric pattern overlay -->
+  <rect width="900" height="300" fill="url(#pattern-research)"/>
+  
+  <!-- Atmospheric glow -->
+  <rect width="900" height="300" fill="url(#glow-research)"/>
+  
+  <!-- Japanese kanji-style decorative marks -->
+  <g opacity="0.06" fill="#00e676">
+    <text x="100" y="280" font-size="120" font-family="serif" transform="rotate(-15,100,280)">武</text>
+    <text x="650" y="100" font-size="80" font-family="serif" transform="rotate(10,650,100)">忍</text>
+  </g>
+  
+  <!-- Smoke/mist effect -->
+  <ellipse cx="450" cy="280" rx="400" ry="60" fill="#00e676" opacity="0.05"/>
+  <ellipse cx="300" cy="290" rx="250" ry="40" fill="#00e676" opacity="0.03"/>
+  
+  
+    <!-- Hooded mysterious figure -->
+    <g transform="translate(390,100)" opacity="0.3">
+      <!-- Hood -->
+      <path d="M10,-20 C10,-50 30,-60 50,-60 C70,-60 90,-50 90,-20 C90,0 80,10 70,15 L30,15 C20,10 10,0 10,-20" fill="#00e676" opacity="0.5"/>
+      <!-- Face shadow -->
+      <ellipse cx="50" cy="-10" rx="20" ry="15" fill="black" opacity="0.5"/>
+      <!-- Eyes glow -->
+      <circle cx="40" cy="-12" r="3" fill="#00e676" opacity="0.8"/>
+      <circle cx="60" cy="-12" r="3" fill="#00e676" opacity="0.8"/>
+      <!-- Robe -->
+      <path d="M20,15 L-10,200 L30,220 L50,200 L70,220 L110,200 L80,15 Z" fill="#00e676" opacity="0.3"/>
+      <!-- Scroll/book -->
+      <rect x="65" y="60" width="30" height="40" rx="3" fill="#00e676" opacity="0.4" transform="rotate(15,80,80)"/>
+      <!-- Mystical particles -->
+      <circle cx="20" cy="80" r="2" fill="#00e676" opacity="0.6"/>
+      <circle cx="90" cy="60" r="1.5" fill="#00e676" opacity="0.5"/>
+      <circle cx="10" cy="120" r="1" fill="#00e676" opacity="0.4"/>
+      <circle cx="100" cy="100" r="2.5" fill="#00e676" opacity="0.3"/>
+    </g>
+    
+  
+  <!-- Particle effects -->
+  <circle cx="150" cy="50" r="1.5" fill="#00e676" opacity="0.3"/>
+  <circle cx="700" cy="80" r="1" fill="#00e676" opacity="0.4"/>
+  <circle cx="250" cy="180" r="2" fill="#00e676" opacity="0.2"/>
+  <circle cx="800" cy="200" r="1.5" fill="#00e676" opacity="0.3"/>
+  <circle cx="500" cy="30" r="1" fill="#00e676" opacity="0.5"/>
+</svg>

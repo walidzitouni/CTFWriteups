@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300">
+  <defs>
+    <radialGradient id="bg-offensive" cx="70%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#8b0000" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0a0a0a" stop-opacity="1"/>
+    </radialGradient>
+    <radialGradient id="glow-offensive" cx="60%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#ff2d55" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="transparent" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Japanese-style pattern -->
+    <pattern id="pattern-offensive" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M30,0 L60,30 L30,60 L0,30 Z" fill="none" stroke="#ff2d55" stroke-width="0.3" opacity="0.08"/>
+    </pattern>
+  </defs>
+  
+  <!-- Dark base -->
+  <rect width="900" height="300" fill="#0d0d0f"/>
+  
+  <!-- Radial gradient background -->
+  <rect width="900" height="300" fill="url(#bg-offensive)"/>
+  
+  <!-- Geometric pattern overlay -->
+  <rect width="900" height="300" fill="url(#pattern-offensive)"/>
+  
+  <!-- Atmospheric glow -->
+  <rect width="900" height="300" fill="url(#glow-offensive)"/>
+  
+  <!-- Japanese kanji-style decorative marks -->
+  <g opacity="0.06" fill="#ff2d55">
+    <text x="100" y="280" font-size="120" font-family="serif" transform="rotate(-15,100,280)">武</text>
+    <text x="650" y="100" font-size="80" font-family="serif" transform="rotate(10,650,100)">忍</text>
+  </g>
+  
+  <!-- Smoke/mist effect -->
+  <ellipse cx="450" cy="280" rx="400" ry="60" fill="#ff2d55" opacity="0.05"/>
+  <ellipse cx="300" cy="290" rx="250" ry="40" fill="#ff2d55" opacity="0.03"/>
+  
+  
+    <!-- Samurai with katana raised -->
+    <g transform="translate(400,100)" opacity="0.3">
+      <path d="M0,250 C10,200 -5,150 0,120 C5,100 15,90 20,80 C25,70 35,60 30,40 C25,20 35,5 50,0 C65,5 75,20 70,40 C65,60 75,70 80,80 C85,90 95,100 100,120 C105,150 90,200 100,250" fill="#ff2d55" opacity="0.6"/>
+      <!-- Body -->
+      <path d="M20,80 L-30,200 L-20,260 L30,250 L40,200 Z" fill="#ff2d55" opacity="0.4"/>
+      <path d="M80,80 L130,200 L120,260 L70,250 L60,200 Z" fill="#ff2d55" opacity="0.4"/>
+      <!-- Katana -->
+      <path d="M85,60 L200,-80 L205,-75 L90,65 Z" fill="#ff2d55" opacity="0.7" stroke="#ff2d55" stroke-width="1"/>
+      <!-- Cape flowing -->
+      <path d="M20,100 C-20,150 -40,200 -60,280 C-30,260 0,240 30,250" fill="#ff2d55" opacity="0.2"/>
+    </g>
+    
+  
+  <!-- Particle effects -->
+  <circle cx="150" cy="50" r="1.5" fill="#ff2d55" opacity="0.3"/>
+  <circle cx="700" cy="80" r="1" fill="#ff2d55" opacity="0.4"/>
+  <circle cx="250" cy="180" r="2" fill="#ff2d55" opacity="0.2"/>
+  <circle cx="800" cy="200" r="1.5" fill="#ff2d55" opacity="0.3"/>
+  <circle cx="500" cy="30" r="1" fill="#ff2d55" opacity="0.5"/>
+</svg>
