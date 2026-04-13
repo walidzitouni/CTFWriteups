@@ -45,6 +45,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		{
+			name: "HTB Machines",
+			url: "/htb-machines/",
+			external: false,
+		},
+		{
 			name: "Resources",
 			url: "/resources/",
 			external: false,

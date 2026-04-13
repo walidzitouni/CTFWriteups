@@ -1,0 +1,21 @@
+---
+import HTBMachinesPanel from "@components/HTBMachinesPanel.svelte";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { machines } from "../data/htb-machines";
+---
+
+<MainGridLayout title="HTB Machines Archive">
+    <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
+        <div class="card-base z-10 px-8 py-6 relative w-full">
+            <div class="flex items-center gap-3 mb-1">
+                <span class="text-2xl">🖥</span>
+                <h1 class="text-3xl font-bold text-75">HTB Machines Archive</h1>
+            </div>
+            <p class="text-50 text-sm mt-1">
+                Suivi des machines HackTheBox, TryHackMe et SecDojo — progression, flags et write-ups.
+            </p>
+        </div>
+    </div>
+
+    <HTBMachinesPanel {machines} client:only="svelte" />
+</MainGridLayout>
