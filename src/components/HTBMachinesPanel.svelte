@@ -11,6 +11,7 @@
     platform: string;
     os: string;
     difficulty: string;
+    releaseDate?: string;
     writeup: string | null;
     tags: string[];
     category: string;
@@ -299,6 +300,14 @@
           <tr class="detail-row">
             <td colspan="8" class="td-cell px-8 py-5">
               <div class="flex flex-wrap gap-8">
+
+                <!-- Release Date -->
+                {#if machine.releaseDate}
+                  <div class="detail-section">
+                    <div class="detail-title">Release Date</div>
+                    <span class="text-75 text-sm">{machine.releaseDate}</span>
+                  </div>
+                {/if}
 
                 <!-- Category -->
                 <div class="detail-section">
