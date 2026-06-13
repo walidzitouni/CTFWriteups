@@ -1,0 +1,167 @@
+---
+// A "classified document" header banner used to give each page a special identity.
+interface Props {
+	code: string; // e.g. "PERSONNEL-07"
+	title: string;
+	subtitle?: string;
+	status?: string; // e.g. "ACTIVE"
+	icon?: string; // emoji
+	stamp?: string; // e.g. "TOP SECRET"
+}
+const {
+	code,
+	title,
+	subtitle,
+	status = "ACTIVE",
+	icon = "🎯",
+	stamp = "TOP SECRET",
+} = Astro.props;
+---
+<div class="cls-header card-base onload-animation" style="animation-delay: var(--content-delay)">
+    <div class="cls-header__bar"></div>
+    <div class="cls-header__scan"></div>
+
+    <div class="cls-header__top">
+        <span class="cls-header__file">DOSSIER&nbsp;//&nbsp;{code}</span>
+        <span class="cls-header__stamp">{stamp}</span>
+    </div>
+
+    <div class="cls-header__main">
+        <span class="cls-header__icon">{icon}</span>
+        <h1 class="cls-header__title" data-text={title}>{title}</h1>
+    </div>
+
+    {subtitle && <p class="cls-header__sub">{subtitle}</p>}
+
+    <div class="cls-header__foot">
+        <span class="cls-header__status"><span class="dot"></span>STATUS: {status}</span>
+        <span class="cls-header__bars">
+            {Array.from({ length: 28 }).map((_, i) => (
+                <i style={`height:${(i * 7) % 14 + 6}px`}></i>
+            ))}
+        </span>
+    </div>
+</div>
+
+<style>
+    .cls-header {
+        position: relative;
+        overflow: hidden;
+        padding: 1.5rem 1.75rem;
+        margin-bottom: 1rem;
+        font-family: var(--font-mono, monospace);
+        background:
+            radial-gradient(ellipse at 0% 0%, oklch(0.30 0.10 var(--hue) / 0.30), transparent 60%),
+            var(--card-bg);
+        border: 1px solid oklch(0.70 0.16 var(--hue) / 0.25);
+    }
+    .cls-header__bar {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, oklch(0.62 0.22 var(--hue)), transparent);
+    }
+    .cls-header__scan {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(180deg, transparent 0%, oklch(0.70 0.18 var(--hue) / 0.08) 50%, transparent 100%);
+        height: 40%;
+        animation: cls-scan 4.5s linear infinite;
+    }
+    @keyframes cls-scan {
+        0% { transform: translateY(-120%); }
+        100% { transform: translateY(320%); }
+    }
+
+    .cls-header__top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.65rem;
+        letter-spacing: 0.18em;
+        margin-bottom: 0.85rem;
+        position: relative;
+        z-index: 2;
+    }
+    .cls-header__file { color: oklch(0.75 0.10 var(--hue)); }
+    .cls-header__stamp {
+        color: oklch(0.72 0.2 var(--hue));
+        border: 2px solid oklch(0.62 0.2 var(--hue));
+        padding: 0.1rem 0.5rem;
+        border-radius: 3px;
+        font-weight: 800;
+        transform: rotate(2deg);
+        text-shadow: 0 0 8px oklch(0.62 0.2 var(--hue) / 0.6);
+    }
+
+    .cls-header__main {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        position: relative;
+        z-index: 2;
+    }
+    .cls-header__icon { font-size: 2rem; filter: drop-shadow(0 0 8px oklch(0.62 0.2 var(--hue) / 0.5)); }
+    .cls-header__title {
+        position: relative;
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        color: var(--deep-text);
+        text-shadow: 0 0 18px oklch(0.62 0.2 var(--hue) / 0.25);
+    }
+    :global(html.dark) .cls-header__title { color: #fff; }
+
+    .cls-header__sub {
+        margin-top: 0.5rem;
+        font-size: 0.82rem;
+        color: var(--deep-text);
+        opacity: 0.7;
+        max-width: 48rem;
+        position: relative;
+        z-index: 2;
+    }
+    :global(html.dark) .cls-header__sub { color: rgba(255,255,255,0.7); }
+
+    .cls-header__foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-top: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+    .cls-header__status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.68rem;
+        letter-spacing: 0.16em;
+        color: oklch(0.72 0.18 var(--hue));
+    }
+    .cls-header__status .dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: oklch(0.72 0.2 var(--hue));
+        box-shadow: 0 0 8px oklch(0.72 0.2 var(--hue));
+        animation: cls-blink 1.2s steps(1) infinite;
+    }
+    @keyframes cls-blink { 50% { opacity: 0.25; } }
+
+    .cls-header__bars {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: 2px;
+        opacity: 0.5;
+    }
+    .cls-header__bars i {
+        display: inline-block;
+        width: 2px;
+        background: var(--deep-text);
+    }
+    :global(html.dark) .cls-header__bars i { background: rgba(255,255,255,0.6); }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cls-header__scan, .cls-header__status .dot { animation: none; }
+    }
+</style>
