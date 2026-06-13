@@ -25,6 +25,7 @@ export type SiteConfig = {
 		src: string;
 		position?: "top" | "center" | "bottom";
 		video?: boolean; // Set to true if src is a video URL
+		matrix?: boolean; // Set to true to render the animated cyber/matrix banner instead of an image/video
 		credit: {
 			enable: boolean;
 			text: string;

@@ -1,18 +1,26 @@
+```
+$ whoami
+> daryx :: red team engineer / offensive security researcher
+```
+
 # About Me
 
-Hey, I'm **Daryx** - a security researcher and CTF enthusiast.
+Hey, I'm **Daryx** — a **Red Team Engineer** and offensive security researcher. I break into systems (with permission) so defenders can build them back stronger. When I'm not on an engagement, I'm capturing flags and writing up the exploits.
 
 ## What I Do
 
-- Capture The Flag (CTF) competitions
-- Security research & vulnerability analysis
-- Web exploitation and cryptography
-- Sharing knowledge through writeups
+- 🎯 **Red Teaming & Adversary Emulation** — full kill-chain operations
+- 🔓 **Offensive Security & Pentesting** — web, network, and infra
+- 🧪 **Vulnerability Research & Exploit Development**
+- 🚩 **Capture The Flag** — competing and organizing
+- ✍️ **Writeups** — turning every owned box into shared knowledge
 
-## Skills
+## Arsenal
 
-- **Web Security**: XSS, SQLi, SSRF, SSTI, JWT attacks
-- **Cryptography**: RSA, AES, hash cracking
+- **Web Exploitation**: XSS, SQLi, SSRF, SSTI, JWT attacks, deserialization
+- **Cryptography**: RSA, AES, hash cracking, side-channel & padding oracles
+- **Red Team Ops**: recon, initial access, privesc, lateral movement, exfil
+- **Tooling**: Burp Suite, nmap, Metasploit, BloodHound, pwntools, custom scripts
 
 ## CTF Teams
 

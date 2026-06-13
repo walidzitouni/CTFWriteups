@@ -1,0 +1,115 @@
+/* ============================================================
+   Red Team / Cyber theme enhancements
+   Layered on top of the base Fuwari styles. Uses --hue so it
+   tracks the configured theme color automatically.
+   ============================================================ */
+
+:root {
+	--font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, monospace;
+	--cyber-line: oklch(0.70 0.16 var(--hue) / 0.22);
+	--cyber-glow: oklch(0.65 0.20 var(--hue) / 0.35);
+}
+
+/* Faint scan-grid behind the whole page (dark mode only) */
+html.dark body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image:
+		linear-gradient(oklch(0.70 0.16 var(--hue) / 0.04) 1px, transparent 1px),
+		linear-gradient(90deg, oklch(0.70 0.16 var(--hue) / 0.04) 1px, transparent 1px);
+	background-size: 38px 38px;
+	mask-image: radial-gradient(ellipse at 50% 0%, black, transparent 80%);
+}
+
+/* --- Cards: neon edge + lift on hover --------------------------------- */
+.card-base {
+	border: 1px solid transparent;
+	position: relative;
+}
+html.dark .card-base {
+	border-color: oklch(0.70 0.16 var(--hue) / 0.10);
+}
+html.dark .card-base:hover {
+	border-color: oklch(0.70 0.18 var(--hue) / 0.45);
+	box-shadow:
+		0 0 0 1px oklch(0.70 0.18 var(--hue) / 0.20),
+		0 10px 40px -12px var(--cyber-glow);
+}
+
+/* Post cards get a scanning accent bar on the left when hovered */
+#main-grid .card-base::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: linear-gradient(180deg, transparent, oklch(0.70 0.20 var(--hue)), transparent);
+	opacity: 0;
+	transition: opacity 0.3s ease;
+	pointer-events: none;
+}
+#main-grid .card-base:hover::after {
+	opacity: 1;
+}
+
+/* --- Buttons / tags: terminal style + glow --------------------------- */
+.btn-regular {
+	font-family: var(--font-mono);
+	letter-spacing: 0.01em;
+}
+.btn-regular:hover {
+	box-shadow: 0 0 18px -4px var(--cyber-glow);
+}
+
+/* Tag pills rendered with ButtonTag get a leading hash */
+a.btn-regular.cyber-tag-pill::before {
+	content: "#";
+	opacity: 0.55;
+	margin-right: 0.1rem;
+	color: var(--primary);
+}
+
+/* --- Links: animated underline sweep --------------------------------- */
+.link-underline {
+	background-image: linear-gradient(var(--primary), var(--primary));
+	background-size: 0% 2px;
+	background-position: 0 100%;
+	background-repeat: no-repeat;
+	transition: background-size 0.25s ease;
+}
+.link-underline:hover {
+	background-size: 100% 2px;
+}
+
+/* --- Profile avatar: glowing ring ------------------------------------ */
+html.dark .card-base a[aria-label="Go to About Page"] {
+	box-shadow: 0 0 0 1px oklch(0.70 0.18 var(--hue) / 0.4), 0 0 28px -6px var(--cyber-glow);
+}
+
+/* --- Navbar brand glow ---------------------------------------------- */
+html.dark #navbar-wrapper .card-base {
+	border-color: oklch(0.70 0.16 var(--hue) / 0.14);
+}
+
+/* --- Search panel: terminal feel ------------------------------------ */
+.search-panel {
+	font-family: var(--font-mono);
+}
+
+/* --- Selection highlight glow --------------------------------------- */
+::selection {
+	text-shadow: 0 0 6px var(--cyber-glow);
+}
+
+/* Section headings inside posts get a `>` marker */
+.custom-md h2::before,
+.custom-md h3::before {
+	content: ">_ ";
+	color: var(--primary);
+	font-family: var(--font-mono);
+	opacity: 0.7;
+}

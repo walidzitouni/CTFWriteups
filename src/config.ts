@@ -8,22 +8,23 @@ import type {
 import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
-	title: "Daryx Writeups",
-	subtitle: "Capture The Flag Solutions",
+	title: "DARYX // Red Team Ops",
+	subtitle: "Offensive Security · Red Teaming · CTF",
 	lang: "en", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
-		hue: 280, // Purple theme
-		fixed: true, // Keep purple theme fixed
+		hue: 18, // Red Team crimson theme
+		fixed: true, // Keep the red theme fixed
 	},
 	banner: {
 		enable: true,
-		src: "https://moewalls.com/wp-content/uploads/preview/2025/madara-mangekyou-sharingan-preview.webm",
+		src: "", // Not used while matrix banner is enabled
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
-		video: true, // Enable video background
+		video: false,
+		matrix: true, // Render the custom animated cyber / matrix-rain banner
 		credit: {
-			enable: true, // Display the credit text of the banner video
-			text: "MoeWalls", // Credit text to be displayed
-			url: "https://moewalls.com/anime/madara-mangekyou-sharingan-live-wallpaper/", // (Optional) URL link to the original artwork or artist's page
+			enable: false, // No external credit needed for the self-built banner
+			text: "",
+			url: "",
 		},
 	},
 	toc: {
@@ -66,7 +67,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.png",
 	name: "Daryx",
-	bio: "Capturing Flags, Sharing Knowledge. Security researcher and CTF enthusiast.",
+	bio: "Red Team Engineer & Offensive Security researcher. Breaking systems to make them stronger — one flag at a time.",
 	links: [
 		{
 			name: "GitHub",
