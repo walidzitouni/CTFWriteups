@@ -1,0 +1,108 @@
+---
+// Client-side decryption gate. The plaintext is NEVER shipped — only the
+// AES-GCM ciphertext at /locked/<slug>.json is published. The password is
+// never stored in source; it derives the AES key via PBKDF2 in the browser.
+interface Props {
+	slug: string;
+	note?: string;
+}
+const { slug, note } = Astro.props;
+const dataUrl = `/locked/${slug}.json`;
+---
+<div id="locked-post" data-url={dataUrl}>
+    <div id="lock-gate" class="card-base p-8 md:p-10 text-center max-w-xl mx-auto my-6 border border-[oklch(0.6_0.2_25/0.4)]">
+        <div class="text-5xl mb-3">🔒</div>
+        <h2 class="text-2xl font-bold mb-2" style="font-family:var(--font-display)">CONTENT LOCKED</h2>
+        <p class="text-50 text-sm mb-1">{note || "This write-up is for an active machine and is sealed."}</p>
+        <p class="text-30 text-xs mb-6">The content is AES-GCM encrypted — it is not present in the page source.</p>
+
+        <form id="lock-form" class="flex flex-col sm:flex-row gap-2 justify-center">
+            <input id="lock-pass" type="password" autocomplete="off" placeholder="Enter password…"
+                   class="bg-[var(--btn-regular-bg)] text-90 rounded-lg px-4 h-11 outline-none w-full sm:w-64
+                          border border-[oklch(0.6_0.2_25/0.3)] focus:border-[oklch(0.6_0.2_25/0.7)] transition"
+                   style="font-family:var(--font-mono)" />
+            <button type="submit" id="lock-btn"
+                    class="btn-regular rounded-lg h-11 px-6 font-bold whitespace-nowrap">UNLOCK</button>
+        </form>
+        <div id="lock-error" class="text-[oklch(0.62_0.22_25)] text-sm mt-3 h-5 transition"></div>
+    </div>
+
+    <div id="lock-content" class="prose dark:prose-invert prose-base !max-w-none custom-md markdown-content" hidden></div>
+</div>
+
+<script>
+function b64ToBuf(b64: string): Uint8Array {
+    const bin = atob(b64);
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return buf;
+}
+
+async function decrypt(password: string, payload: any): Promise<string> {
+    const enc = new TextEncoder();
+    const baseKey = await crypto.subtle.importKey(
+        "raw", enc.encode(password), "PBKDF2", false, ["deriveKey"],
+    );
+    const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: b64ToBuf(payload.salt), iterations: payload.iter, hash: "SHA-256" },
+        baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"],
+    );
+    const pt = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: b64ToBuf(payload.iv) }, key, b64ToBuf(payload.data),
+    );
+    return new TextDecoder().decode(pt);
+}
+
+function initLockedPost() {
+    const root = document.getElementById("locked-post");
+    if (!root || root.dataset.init === "1") return;
+    root.dataset.init = "1";
+
+    const url = root.dataset.url!;
+    const form = document.getElementById("lock-form") as HTMLFormElement;
+    const gate = document.getElementById("lock-gate")!;
+    const input = document.getElementById("lock-pass") as HTMLInputElement;
+    const errEl = document.getElementById("lock-error")!;
+    const content = document.getElementById("lock-content")!;
+    let payload: any = null;
+
+    const reveal = (html: string) => {
+        content.innerHTML = html;
+        content.hidden = false;
+        gate.style.display = "none";
+    };
+
+    const tryUnlock = async (password: string, fromCache = false) => {
+        if (!payload) {
+            payload = await fetch(url).then((r) => r.json());
+        }
+        try {
+            const html = await decrypt(password, payload);
+            sessionStorage.setItem(`unlock:${url}`, password);
+            reveal(html);
+        } catch {
+            if (!fromCache) {
+                errEl.textContent = "Wrong password.";
+                input.value = "";
+                input.focus();
+            }
+        }
+    };
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        errEl.textContent = "";
+        const pw = input.value.trim();
+        if (pw) tryUnlock(pw);
+    });
+
+    // Auto-unlock for the rest of the session once entered correctly
+    const cached = sessionStorage.getItem(`unlock:${url}`);
+    if (cached) tryUnlock(cached, true);
+}
+
+initLockedPost();
+document.addEventListener("swup:enable", () =>
+    window.swup?.hooks?.on?.("page:view", initLockedPost),
+);
+</script>
