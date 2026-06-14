@@ -1,5 +1,5 @@
-// Generates an ORIGINAL Dexter-mood avatar: a noir silhouette over a blood
-// spatter (no copyrighted artwork / likeness). Run: node scripts/gen-avatar.mjs
+// Generates an ORIGINAL menacing red-on-black cat avatar (theme-matched,
+// no copied artwork). Run: node scripts/gen-avatar.mjs
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -7,62 +7,67 @@ import sharp from "sharp";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const out = resolve(__dirname, "../src/assets/images/avatar.png");
 
-// scattered blood droplets for the spatter
-let droplets = "";
-const seedRand = (() => {
-	let s = 1337;
-	return () => ((s = (s * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
-})();
-for (let i = 0; i < 70; i++) {
-	const x = 30 + seedRand() * 340;
-	const y = 20 + seedRand() * 200;
-	const r = 1 + seedRand() * (i % 9 === 0 ? 12 : 5);
-	const o = 0.35 + seedRand() * 0.5;
-	droplets += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#8a0f0f" opacity="${o.toFixed(2)}"/>`;
-}
-
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
   <defs>
-    <radialGradient id="bg" cx="0.5" cy="0.42" r="0.75">
-      <stop offset="0" stop-color="#2a0c0e"/>
-      <stop offset="0.6" stop-color="#160708"/>
-      <stop offset="1" stop-color="#0b0405"/>
+    <radialGradient id="bg" cx="0.5" cy="0.4" r="0.85">
+      <stop offset="0" stop-color="#1a0405"/>
+      <stop offset="1" stop-color="#050304"/>
     </radialGradient>
-    <filter id="spat" x="-20%" y="-20%" width="140%" height="140%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.05 0.07" numOctaves="2" seed="9" result="n"/>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="20" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#ff2a36"/>
-      <stop offset="1" stop-color="#7a0d0d"/>
-    </linearGradient>
+    <radialGradient id="fur" cx="0.5" cy="0.42" r="0.62">
+      <stop offset="0" stop-color="#ff3b34"/>
+      <stop offset="0.65" stop-color="#e01616"/>
+      <stop offset="1" stop-color="#9c0d0d"/>
+    </radialGradient>
+    <radialGradient id="vig" cx="0.5" cy="0.45" r="0.62">
+      <stop offset="0.62" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.7"/>
+    </radialGradient>
   </defs>
 
-  <rect width="400" height="400" fill="url(#bg)"/>
+  <rect width="600" height="600" fill="url(#bg)"/>
 
-  <!-- blood spatter -->
-  <g filter="url(#spat)">${droplets}</g>
-
-  <!-- thin drips -->
-  <g fill="#7a0d0d" opacity="0.55">
-    <rect x="120" y="40" width="2.5" height="60" rx="1"/>
-    <rect x="250" y="60" width="2" height="44" rx="1"/>
-    <rect x="300" y="30" width="2" height="80" rx="1"/>
+  <!-- red cat (head, ears, body) -->
+  <g fill="url(#fur)">
+    <path d="M170 92 L256 240 L118 214 Z"/>
+    <path d="M430 92 L344 240 L482 214 Z"/>
+    <ellipse cx="300" cy="300" rx="168" ry="152"/>
+    <path d="M112 600 C133 466 226 426 300 426 C374 426 467 466 488 600 Z"/>
   </g>
 
-  <!-- red rim light (offset silhouette) -->
-  <g transform="translate(-4,0)" fill="url(#rim)">
-    <path d="M200 150 C152 150 150 200 158 232 C120 250 96 286 92 360 L92 400 L308 400 L308 360 C304 286 280 250 242 232 C250 200 248 150 200 150 Z"/>
+  <!-- inner ears -->
+  <g fill="#7a0a0a">
+    <path d="M188 132 L242 228 L158 198 Z"/>
+    <path d="M412 132 L358 228 L442 198 Z"/>
   </g>
 
-  <!-- silhouette -->
-  <g fill="#070405">
-    <path d="M200 150 C152 150 150 200 158 232 C120 250 96 286 92 360 L92 400 L308 400 L308 360 C304 286 280 250 242 232 C250 200 248 150 200 150 Z"/>
+  <!-- angry brows -->
+  <g fill="#3a0303">
+    <path d="M196 252 L286 286 L282 302 L196 272 Z"/>
+    <path d="M404 252 L314 286 L318 302 L404 272 Z"/>
   </g>
 
-  <!-- vignette -->
-  <rect width="400" height="400" fill="none"/>
-  <rect width="400" height="400" fill="url(#bg)" opacity="0" />
+  <!-- eyes -->
+  <ellipse cx="232" cy="294" rx="43" ry="17" transform="rotate(-16 232 294)" fill="#060000"/>
+  <ellipse cx="368" cy="294" rx="43" ry="17" transform="rotate(16 368 294)" fill="#060000"/>
+  <circle cx="240" cy="292" r="4" fill="#ff5a4a" opacity="0.8"/>
+  <circle cx="360" cy="292" r="4" fill="#ff5a4a" opacity="0.8"/>
+
+  <!-- nose + mouth -->
+  <path d="M300 330 L281 352 L319 352 Z" fill="#180101"/>
+  <path d="M300 352 L300 376 M300 376 C300 392 274 394 260 386 M300 376 C300 392 326 394 340 386"
+        stroke="#180101" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+  <!-- whiskers -->
+  <g stroke="#ff9a92" stroke-width="3" stroke-linecap="round" opacity="0.85" fill="none">
+    <path d="M250 360 L108 332"/>
+    <path d="M250 372 L104 374"/>
+    <path d="M250 384 L116 414"/>
+    <path d="M350 360 L492 332"/>
+    <path d="M350 372 L496 374"/>
+    <path d="M350 384 L484 414"/>
+  </g>
+
+  <rect width="600" height="600" fill="url(#vig)"/>
 </svg>`;
 
 await sharp(Buffer.from(svg)).png().toFile(out);
