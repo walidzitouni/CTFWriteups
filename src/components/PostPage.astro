@@ -9,6 +9,7 @@ let delay = 0;
 const interval = 50;
 ---
 <div class="evidence-board mb-4">
+    <svg class="evidence-strings" aria-hidden="true" preserveAspectRatio="none"></svg>
     <div class="evidence-board__banner col-span-full">
         <span class="tape">CASE FILES</span>
         <span class="text-sm opacity-90">// {page.data.length} active investigations — click a file to open</span>
@@ -31,3 +32,54 @@ const interval = 50;
         ></CaseFileCard>
     ))}
 </div>
+
+<script>
+    // Draw red "conspiracy" yarn connecting the case-file pins.
+    function drawEvidenceStrings() {
+        const board = document.querySelector<HTMLElement>(".evidence-board");
+        const svg = board?.querySelector<SVGSVGElement>(".evidence-strings");
+        if (!board || !svg) return;
+
+        const pins = Array.from(board.querySelectorAll<HTMLElement>(".case-file__pin"));
+        if (pins.length < 2) return;
+
+        const br = board.getBoundingClientRect();
+        svg.setAttribute("viewBox", `0 0 ${br.width} ${br.height}`);
+
+        const pts = pins.map((p) => {
+            const r = p.getBoundingClientRect();
+            return { x: r.left - br.left + r.width / 2, y: r.top - br.top + r.height / 2 };
+        });
+
+        const seg = (a: {x:number;y:number}, b: {x:number;y:number}, sag: number) => {
+            const mx = (a.x + b.x) / 2;
+            const my = (a.y + b.y) / 2 + sag;
+            return `M ${a.x} ${a.y} Q ${mx} ${my} ${b.x} ${b.y} `;
+        };
+
+        let d = "";
+        for (let i = 0; i < pts.length - 1; i++) d += seg(pts[i], pts[i + 1], 16 + (i % 3) * 8);
+        // a few cross-links for that "everything is connected" look
+        for (const [a, b] of [[0, 3], [1, 4], [2, 5]]) {
+            if (pts[a] && pts[b]) d += seg(pts[a], pts[b], 26);
+        }
+
+        const knots = pts
+            .map((p) => `<circle cx="${p.x}" cy="${p.y}" r="3.2" class="string-knot" />`)
+            .join("");
+
+        svg.innerHTML = `<path d="${d}" class="string-line" fill="none" />${knots}`;
+    }
+
+    function schedule() {
+        requestAnimationFrame(() => requestAnimationFrame(drawEvidenceStrings));
+    }
+
+    schedule();
+    window.addEventListener("resize", schedule);
+    window.addEventListener("load", schedule);
+    document.fonts?.ready?.then(schedule);
+    document.addEventListener("swup:enable", () =>
+        window.swup?.hooks?.on?.("page:view", schedule),
+    );
+</script>
