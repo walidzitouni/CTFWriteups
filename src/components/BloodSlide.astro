@@ -1,0 +1,51 @@
+---
+// A single writeup rendered as a Dexter-style glass blood slide.
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+	class?: string;
+	entry: CollectionEntry<"posts">;
+	title: string;
+	url: string;
+	published: Date;
+	tags: string[];
+	category: string | null;
+	description: string;
+	style?: string;
+	index: number;
+}
+const { entry, title, url, published, tags, category, style, index } =
+	Astro.props;
+const className = Astro.props.class;
+
+const { remarkPluginFrontmatter } = await entry.render();
+const dateStr = published.toISOString().slice(0, 10).replace(/-/g, ".");
+const caseNo = String(index + 1).padStart(3, "0");
+const blood = (index % 3) + 1;
+const rot = ((index * 31) % 3) - 1; // -1 .. +1 deg
+---
+<div class:list={["slide-slot", className]} style={style}>
+    <a href={url} class="blood-slide" aria-label={`Open: ${title}`} style={`--rot:${rot}deg`}>
+        <span class="blood-slide__label">
+            <b>№ {caseNo}</b>
+            <span>{dateStr}</span>
+        </span>
+
+        <span class="blood-slide__smear" style={`background-image:url('/board/blood-${blood}.png')`}></span>
+
+        <span class="blood-slide__body">
+            <span class="blood-slide__title">{title}</span>
+            <span class="blood-slide__meta">
+                {category && <span class="blood-slide__cat">{category}</span>}
+                <span>{remarkPluginFrontmatter.minutes} min read</span>
+            </span>
+            {tags && tags.length > 0 && (
+                <span class="blood-slide__tags">
+                    {tags.slice(0, 3).map((t) => <span class="blood-slide__chip">{t.trim()}</span>)}
+                </span>
+            )}
+        </span>
+
+        <span class="blood-slide__glare" aria-hidden="true"></span>
+    </a>
+</div>
