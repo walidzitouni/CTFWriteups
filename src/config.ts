@@ -9,7 +9,7 @@ import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
 	title: "DARYX // Red Team Ops",
-	subtitle: "Offensive Security · Red Teaming · CTF",
+	subtitle: "Offensive Security · Red Team · Specimen Archive",
 	lang: "en", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
 		hue: 18, // Red Team crimson theme
@@ -67,7 +67,7 @@ export const navBarConfig: NavBarConfig = {
 export const profileConfig: ProfileConfig = {
 	avatar: "assets/images/avatar.png",
 	name: "Daryx",
-	bio: "Red Team Engineer & Offensive Security researcher. Breaking systems to make them stronger — one flag at a time.",
+	bio: "Red Team Engineer & Offensive Security researcher. By day I harden systems — by night I collect flags like specimens.",
 	links: [
 		{
 			name: "GitHub",
