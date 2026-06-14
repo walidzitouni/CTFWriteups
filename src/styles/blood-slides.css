@@ -1,40 +1,125 @@
 /* ============================================================
    "Blood slide box" — the post list as glass microscope slides
-   resting in a walnut specimen box (Dexter-style). Self-contained.
+   resting in a rosewood specimen case (Dexter-style), complete
+   with brass hardware, felt-lined lid and velvet channels.
    ============================================================ */
 
 .slide-box {
 	position: relative;
-	border-radius: 12px;
+	border-radius: 16px;
 	background-image: url("/board/wood.png");
 	background-size: cover;
-	padding: 14px; /* wood frame thickness */
+	padding: 18px;
 	box-shadow:
-		0 18px 44px rgba(0, 0, 0, 0.55),
-		inset 0 0 0 2px rgba(255, 255, 255, 0.06),
-		inset 0 0 22px rgba(0, 0, 0, 0.6);
+		0 26px 64px rgba(0, 0, 0, 0.6),
+		inset 0 2px 0 rgba(255, 214, 170, 0.22),
+		inset 0 -4px 8px rgba(0, 0, 0, 0.65),
+		inset 0 0 0 2px rgba(0, 0, 0, 0.4);
 	margin-bottom: 1rem;
+	isolation: isolate;
+}
+/* ambient top spotlight on the lid/wood */
+.slide-box::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 16px;
+	pointer-events: none;
+	background: radial-gradient(130% 75% at 50% -12%, rgba(255, 222, 184, 0.12), transparent 60%);
+	z-index: 3;
 }
 
-/* engraved brass nameplate */
+/* ---- Brass corner brackets ----------------------------------------- */
+.slide-box__corner {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	z-index: 4;
+	pointer-events: none;
+	filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+	background: radial-gradient(circle at 8px 8px, #6e4e1c 0 1.6px, transparent 2.4px);
+}
+.slide-box__corner::before,
+.slide-box__corner::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: linear-gradient(135deg, #fbe6ad, #c79a4a 45%, #7c581f);
+	border-radius: 2px;
+	box-shadow: inset 0 0 2px rgba(255, 255, 255, 0.55);
+}
+.slide-box__corner::before { width: 30px; height: 9px; }
+.slide-box__corner::after { width: 9px; height: 30px; }
+.slide-box__corner.tl { top: 7px; left: 7px; }
+.slide-box__corner.tr { top: 7px; right: 7px; transform: scaleX(-1); }
+.slide-box__corner.bl { bottom: 7px; left: 7px; transform: scaleY(-1); }
+.slide-box__corner.br { bottom: 7px; right: 7px; transform: scale(-1, -1); }
+
+/* ---- Brass hinges (top) + latch (bottom) --------------------------- */
+.slide-box__hinge {
+	position: absolute;
+	top: -3px;
+	width: 32px;
+	height: 13px;
+	border-radius: 3px;
+	background: linear-gradient(180deg, #ecd293, #a87f37 60%, #6e4f1c);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+	z-index: 5;
+	pointer-events: none;
+}
+.slide-box__hinge.left { left: 33%; }
+.slide-box__hinge.right { right: 33%; }
+.slide-box__latch {
+	position: absolute;
+	bottom: -7px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 48px;
+	height: 20px;
+	border-radius: 4px;
+	background: linear-gradient(180deg, #f3df9a, #b88f43 55%, #7a5722);
+	box-shadow: 0 3px 7px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+	z-index: 6;
+	pointer-events: none;
+}
+.slide-box__latch::after {
+	content: "";
+	position: absolute;
+	inset: 7px 16px;
+	border-radius: 2px;
+	background: rgba(0, 0, 0, 0.3);
+}
+
+/* ---- Felt-lined inner lid with brass nameplate --------------------- */
+.slide-box__lid {
+	position: relative;
+	border-radius: 8px;
+	margin-bottom: 14px;
+	padding: 0.55rem;
+	background: rgba(0, 0, 0, 0.28);
+	box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 200, 160, 0.12);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 2;
+}
 .slide-box__plate {
 	display: flex;
 	align-items: center;
 	gap: 0.6rem;
-	width: fit-content;
-	margin: 0.25rem auto 0.9rem;
-	padding: 0.35rem 1.1rem;
+	padding: 0.4rem 1.2rem;
 	border-radius: 4px;
 	font-family: var(--font-mono, monospace);
 	font-size: 0.72rem;
-	letter-spacing: 0.22em;
+	letter-spacing: 0.24em;
 	color: #2a1d0c;
-	background: linear-gradient(180deg, #e8c879, #b8893f 55%, #d8b15f);
+	background: linear-gradient(180deg, #ecce7f, #b8893f 55%, #d8b15f);
 	box-shadow:
-		inset 0 1px 0 rgba(255, 255, 255, 0.6),
+		inset 0 1px 0 rgba(255, 255, 255, 0.65),
 		inset 0 -2px 4px rgba(0, 0, 0, 0.35),
-		0 2px 5px rgba(0, 0, 0, 0.5);
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+		0 2px 5px rgba(0, 0, 0, 0.55);
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 .slide-box__plate .dot {
 	width: 7px;
@@ -42,30 +127,53 @@
 	border-radius: 50%;
 	background: #7a0d0d;
 	box-shadow: 0 0 6px #b3121c;
+	animation: slide-pulse 1.6s ease-in-out infinite;
 }
+@keyframes slide-pulse { 50% { opacity: 0.35; } }
 
-/* velvet interior tray that holds the slides */
+/* ---- Velvet tray --------------------------------------------------- */
 .slide-box__tray {
-	border-radius: 8px;
+	position: relative;
+	border-radius: 7px;
 	padding: 1.1rem 1rem;
-	background:
-		radial-gradient(ellipse at 50% 0%, #4a0c14, #2a0509 70%, #1a0306);
-	box-shadow:
-		inset 0 0 30px rgba(0, 0, 0, 0.85),
-		inset 0 2px 0 rgba(0, 0, 0, 0.6);
+	background: radial-gradient(135% 90% at 50% 0%, #5a0e18, #2e060b 62%, #16040 100%);
+	background-color: #1c0508;
+	box-shadow: inset 0 0 42px rgba(0, 0, 0, 0.9), inset 0 3px 0 rgba(0, 0, 0, 0.65);
 	display: flex;
 	flex-direction: column;
-	gap: 0.9rem;
+	gap: 0.85rem;
+	z-index: 1;
+}
+/* felt fuzz */
+.slide-box__tray::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 7px;
+	pointer-events: none;
+	background-image: radial-gradient(rgba(255, 255, 255, 0.05) 0.5px, transparent 0.5px);
+	background-size: 3px 3px;
+	opacity: 0.5;
+	mix-blend-mode: overlay;
+}
+/* spotlight over slides */
+.slide-box__tray::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 7px;
+	pointer-events: none;
+	background: radial-gradient(85% 55% at 50% -8%, rgba(255, 235, 210, 0.1), transparent 55%);
 }
 
-/* a slot/groove the slide sits in */
+/* recessed velvet channel each slide rests in */
 .slide-slot {
 	position: relative;
-	padding: 4px 0;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03);
+	padding: 5px 6px;
+	border-radius: 6px;
+	background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.12));
+	box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.65), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
 }
-.slide-slot:last-child { border-bottom: none; }
 
 /* ---- The glass slide ----------------------------------------------- */
 .blood-slide {
@@ -76,45 +184,43 @@
 	min-height: 5rem;
 	border-radius: 6px;
 	overflow: hidden;
-	background:
-		linear-gradient(180deg, rgba(228, 240, 244, 0.18), rgba(150, 175, 185, 0.07));
-	border: 1px solid rgba(255, 255, 255, 0.22);
+	background: linear-gradient(180deg, rgba(230, 242, 246, 0.2), rgba(150, 178, 188, 0.07) 55%, rgba(120, 150, 160, 0.12));
+	border: 1px solid rgba(255, 255, 255, 0.24);
+	border-bottom-color: rgba(0, 0, 0, 0.45);
 	box-shadow:
-		0 7px 16px rgba(0, 0, 0, 0.55),
-		inset 0 1px 0 rgba(255, 255, 255, 0.3),
-		inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+		0 8px 18px rgba(0, 0, 0, 0.55),
+		inset 0 1px 0 rgba(255, 255, 255, 0.35),
+		inset 0 -2px 3px rgba(0, 0, 0, 0.35);
 	transform: rotate(var(--rot, 0deg));
 	transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s, filter 0.28s;
 	backdrop-filter: blur(1.5px);
 }
 .blood-slide:hover {
-	transform: rotate(0deg) translateX(14px) scale(1.012);
+	transform: rotate(0deg) translateX(16px) scale(1.015);
 	box-shadow:
-		0 12px 28px rgba(0, 0, 0, 0.6),
-		0 0 0 1px oklch(0.6 0.2 var(--hue) / 0.55),
-		0 0 26px oklch(0.55 0.22 var(--hue) / 0.4),
-		inset 0 1px 0 rgba(255, 255, 255, 0.4);
+		0 14px 32px rgba(0, 0, 0, 0.62),
+		0 0 0 1px oklch(0.6 0.2 var(--hue) / 0.6),
+		0 0 30px oklch(0.55 0.22 var(--hue) / 0.45),
+		inset 0 1px 0 rgba(255, 255, 255, 0.45);
 }
 
-/* frosted etched label */
 .blood-slide__label {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 0.15rem;
-	background: linear-gradient(135deg, #eef1f2, #cdd5d7);
-	border-right: 1px solid rgba(255, 255, 255, 0.4);
+	background: linear-gradient(135deg, #f1f3f4, #ccd4d6);
+	border-right: 1px solid rgba(255, 255, 255, 0.45);
 	color: #2a2a2e;
 	font-family: var(--font-mono, monospace);
 	font-size: 0.6rem;
 	letter-spacing: 0.05em;
 	text-align: center;
-	box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.5);
+	box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.6);
 }
-.blood-slide__label b { font-size: 0.72rem; color: #7a0d0d; }
+.blood-slide__label b { font-size: 0.74rem; color: #7a0d0d; }
 
-/* blood specimen */
 .blood-slide__smear {
 	background-size: contain;
 	background-repeat: no-repeat;
@@ -123,17 +229,16 @@
 	transition: filter 0.28s, transform 0.28s;
 }
 .blood-slide:hover .blood-slide__smear {
-	filter: brightness(1.18) saturate(1.25) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.6));
-	transform: scale(1.04);
+	filter: brightness(1.2) saturate(1.3) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+	transform: scale(1.05);
 }
 
-/* slide body / etched text */
 .blood-slide__body {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	gap: 0.25rem;
-	padding: 0.5rem 0.9rem 0.5rem 0.25rem;
+	padding: 0.5rem 0.9rem 0.5rem 0.35rem;
 	min-width: 0;
 }
 .blood-slide__title {
@@ -181,27 +286,29 @@
 }
 .blood-slide__chip::before { content: "#"; opacity: 0.5; }
 
-/* moving glass glare */
 .blood-slide__glare {
 	position: absolute;
 	top: 0;
-	left: -40%;
+	left: -45%;
 	width: 35%;
 	height: 100%;
-	background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+	background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 	transform: skewX(-18deg);
-	transition: left 0.5s ease;
+	transition: left 0.55s ease;
 	pointer-events: none;
 }
-.blood-slide:hover .blood-slide__glare { left: 130%; }
+.blood-slide:hover .blood-slide__glare { left: 135%; }
 
 @media (max-width: 520px) {
 	.blood-slide { grid-template-columns: 3.5rem 4.5rem 1fr; }
 	.blood-slide__tags { display: none; }
+	.slide-box__hinge.left { left: 28%; }
+	.slide-box__hinge.right { right: 28%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.blood-slide,
 	.blood-slide__glare,
 	.blood-slide__smear { transition: none; }
+	.slide-box__plate .dot { animation: none; }
 }

@@ -9,7 +9,18 @@ let delay = 0;
 const interval = 50;
 ---
 <div class="slide-box">
-    <div class="slide-box__plate"><span class="dot"></span>SPECIMEN ARCHIVE · {page.data.length} SLIDES</div>
+    <span class="slide-box__corner tl"></span>
+    <span class="slide-box__corner tr"></span>
+    <span class="slide-box__corner bl"></span>
+    <span class="slide-box__corner br"></span>
+    <span class="slide-box__hinge left"></span>
+    <span class="slide-box__hinge right"></span>
+    <span class="slide-box__latch"></span>
+
+    <div class="slide-box__lid">
+        <div class="slide-box__plate"><span class="dot"></span>SPECIMEN ARCHIVE · {page.data.length} SLIDES</div>
+    </div>
+
     <div class="slide-box__tray">
         {page.data.map((entry: CollectionEntry<"posts">, i: number) => (
             <BloodSlide

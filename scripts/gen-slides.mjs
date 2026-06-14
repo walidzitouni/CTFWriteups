@@ -13,19 +13,25 @@ mkdirSync(outDir, { recursive: true });
 const woodSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
   <defs>
     <filter id="grain">
-      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.085" numOctaves="5" seed="14" stitchTiles="stitch"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.075" numOctaves="6" seed="14" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
-      <feComponentTransfer><feFuncA type="linear" slope="0.6"/></feComponentTransfer>
+      <feComponentTransfer><feFuncA type="gamma" amplitude="1" exponent="1.4" offset="0"/></feComponentTransfer>
     </filter>
-    <linearGradient id="base" x1="0" y1="0" x2="1" y2="0.2">
-      <stop offset="0" stop-color="#3a2113"/>
-      <stop offset="0.5" stop-color="#4d2c18"/>
-      <stop offset="1" stop-color="#341c0f"/>
+    <filter id="streak">
+      <feTurbulence type="fractalNoise" baseFrequency="0.004 0.16" numOctaves="3" seed="31" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="discrete" tableValues="0 0 0.4 0 0.7 0 0.2"/></feComponentTransfer>
+    </filter>
+    <linearGradient id="base" x1="0" y1="0" x2="1" y2="0.15">
+      <stop offset="0" stop-color="#4a2016"/>
+      <stop offset="0.5" stop-color="#5e2a1a"/>
+      <stop offset="1" stop-color="#3a160f"/>
     </linearGradient>
   </defs>
   <rect width="600" height="600" fill="url(#base)"/>
-  <rect width="600" height="600" fill="#1c0e06" filter="url(#grain)" opacity="0.7" style="mix-blend-mode:multiply"/>
-  <rect width="600" height="600" fill="#6b4226" filter="url(#grain)" opacity="0.18" style="mix-blend-mode:screen"/>
+  <rect width="600" height="600" fill="#220a05" filter="url(#grain)" opacity="0.75" style="mix-blend-mode:multiply"/>
+  <rect width="600" height="600" fill="#1a0603" filter="url(#streak)" opacity="0.5" style="mix-blend-mode:multiply"/>
+  <rect width="600" height="600" fill="#9c5230" filter="url(#grain)" opacity="0.16" style="mix-blend-mode:screen"/>
 </svg>`;
 
 await sharp(Buffer.from(woodSvg)).png().toFile(resolve(outDir, "wood.png"));
