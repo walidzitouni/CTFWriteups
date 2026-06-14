@@ -1,5 +1,6 @@
 ---
 import ArchivePanel from "@components/ArchivePanel.svelte";
+import ClassifiedHeader from "@components/ClassifiedHeader.astro";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
@@ -9,6 +10,14 @@ const sortedPostsList = await getSortedPostsList();
 ---
 
 <MainGridLayout title={i18n(I18nKey.archive)}>
+    <ClassifiedHeader
+        code="MISSION-LOG"
+        title="Mission Log"
+        subtitle="Complete operational archive — every flag captured, indexed by date, category and tag."
+        status="ALL RECORDS"
+        icon="🗄️"
+        stamp="ARCHIVE"
+    />
     <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
 </MainGridLayout>
 

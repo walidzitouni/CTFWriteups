@@ -1,0 +1,313 @@
+/* ============================================================
+   FBI "evidence board" — the post list rendered as pinned
+   case files on a cork board. Self-contained (no Tailwind
+   utility coupling) so colors stay correct in light & dark.
+   ============================================================ */
+
+.evidence-board {
+	position: relative;
+	border-radius: var(--radius-large);
+	background-color: #b07a3f;
+	background-image: url("/board/cork.png");
+	background-size: 360px;
+	border: 10px solid #4a3115;
+	box-shadow:
+		inset 0 0 70px rgba(0, 0, 0, 0.45),
+		inset 0 0 0 2px rgba(255, 255, 255, 0.05),
+		0 14px 40px rgba(0, 0, 0, 0.45);
+	padding: 2.5rem 1.5rem 2rem;
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2.75rem 1.75rem;
+}
+@media (min-width: 640px) {
+	.evidence-board {
+		grid-template-columns: 1fr 1fr;
+		padding: 3rem 2rem 2.5rem;
+	}
+}
+
+/* red conspiracy yarn overlay */
+.evidence-strings {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+	pointer-events: none;
+	overflow: visible;
+}
+.evidence-strings .string-line {
+	stroke: oklch(0.55 0.24 var(--hue));
+	stroke-width: 2;
+	stroke-linecap: round;
+	opacity: 0.82;
+	filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.55));
+}
+.evidence-strings .string-knot {
+	fill: oklch(0.4 0.2 var(--hue));
+	stroke: oklch(0.7 0.18 var(--hue));
+	stroke-width: 0.8;
+	opacity: 0.9;
+}
+
+/* Board header banner */
+.evidence-board__banner {
+	position: relative;
+	margin-bottom: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	font-family: var(--font-mono);
+	color: #ffe9c7;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.evidence-board__banner .tape {
+	background: oklch(0.62 0.2 var(--hue) / 0.85);
+	color: #fff;
+	font-weight: 700;
+	letter-spacing: 0.25em;
+	padding: 0.35rem 1rem;
+	transform: rotate(-2deg);
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+	border: 1px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* ---- Case file paper ---------------------------------------------- */
+.case-file {
+	position: relative;
+	z-index: 1;
+}
+.case-file:hover {
+	z-index: 30;
+}
+
+.case-file__pin {
+	position: absolute;
+	top: -16px;
+	left: 50%;
+	width: 34px;
+	height: 34px;
+	transform: translateX(-50%);
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.45));
+	z-index: 6;
+	pointer-events: none;
+}
+.pin-red { background-image: url("/board/pin-red.png"); }
+.pin-amber { background-image: url("/board/pin-amber.png"); }
+.pin-steel { background-image: url("/board/pin-steel.png"); }
+
+/* a torn piece of tape on a corner for variety */
+.case-file__tape {
+	position: absolute;
+	top: -10px;
+	right: 18px;
+	width: 64px;
+	height: 22px;
+	background: rgba(244, 236, 216, 0.55);
+	border-left: 1px dashed rgba(0, 0, 0, 0.15);
+	border-right: 1px dashed rgba(0, 0, 0, 0.15);
+	transform: rotate(8deg);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+	z-index: 6;
+	pointer-events: none;
+}
+.case-file:nth-child(even) .case-file__tape { display: none; }
+
+.case-file__paper {
+	position: relative;
+	background:
+		linear-gradient(135deg, #fbf6e8 0%, #f1e7cf 55%, #e7dabb 100%);
+	color: #271f14;
+	border-radius: 3px;
+	padding: 1.4rem 1.25rem 1.1rem;
+	box-shadow:
+		0 12px 26px rgba(0, 0, 0, 0.42),
+		inset 0 0 30px rgba(120, 90, 40, 0.12);
+	transform: rotate(var(--rot, 0deg));
+	transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s;
+	font-family: "Courier New", var(--font-mono);
+}
+.case-file__paper::after {
+	/* subtle paper grain via repeating lines */
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 3px;
+	background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.018) 0 1px, transparent 1px 3px);
+	pointer-events: none;
+}
+.case-file:hover .case-file__paper {
+	transform: rotate(0deg) translateY(-10px) scale(1.025);
+	box-shadow:
+		0 22px 46px rgba(0, 0, 0, 0.55),
+		0 0 0 1px oklch(0.62 0.2 var(--hue) / 0.5);
+}
+
+.case-file__open {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	border-radius: 3px;
+}
+
+.case-file__head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.7rem;
+	letter-spacing: 0.05em;
+	border-bottom: 2px solid rgba(40, 28, 14, 0.5);
+	padding-bottom: 0.4rem;
+	margin-bottom: 0.75rem;
+}
+.case-file__no {
+	font-weight: 700;
+	color: #3a2c18;
+}
+.case-file__stamp {
+	color: oklch(0.5 0.22 var(--hue));
+	border: 2px solid oklch(0.5 0.22 var(--hue));
+	padding: 0.05rem 0.4rem;
+	border-radius: 3px;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	transform: rotate(4deg);
+	opacity: 0.85;
+}
+
+/* evidence photo */
+.case-file__photo {
+	position: relative;
+	height: 8rem;
+	margin-bottom: 0.85rem;
+	overflow: hidden;
+	border: 5px solid #fff;
+	box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+	transform: rotate(-1deg);
+	background: #111;
+}
+.case-file__photo :global(img),
+.case-file__photo :global(.custom-md) {
+	filter: grayscale(0.35) contrast(1.05) sepia(0.15);
+	height: 100%;
+}
+.case-file__photo-tag {
+	position: absolute;
+	bottom: 4px;
+	right: 4px;
+	background: rgba(0, 0, 0, 0.7);
+	color: #ffd;
+	font-size: 0.55rem;
+	letter-spacing: 0.15em;
+	padding: 0.1rem 0.35rem;
+}
+.case-file__photo--none {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: repeating-linear-gradient(45deg, #2a2a2a 0 10px, #222 10px 20px);
+	color: #ff5a5a;
+	font-size: 0.7rem;
+	letter-spacing: 0.12em;
+	transform: rotate(-1deg);
+}
+
+.case-file__label {
+	font-size: 0.6rem;
+	letter-spacing: 0.25em;
+	color: #7a5a28;
+	font-weight: 700;
+}
+.case-file__title {
+	font-size: 1.15rem;
+	line-height: 1.25;
+	font-weight: 800;
+	margin: 0.1rem 0 0.5rem;
+	color: #1c150c;
+	font-family: var(--font-mono);
+}
+.case-file:hover .case-file__title {
+	color: oklch(0.5 0.22 var(--hue));
+}
+
+.case-file__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	align-items: center;
+	font-size: 0.7rem;
+	color: #5a472c;
+	margin-bottom: 0.55rem;
+}
+.case-file__cat {
+	background: rgba(40, 28, 14, 0.1);
+	border: 1px solid rgba(40, 28, 14, 0.25);
+	padding: 0.05rem 0.4rem;
+	border-radius: 2px;
+	font-weight: 700;
+}
+
+.case-file__brief {
+	font-size: 0.8rem;
+	line-height: 1.5;
+	color: #3c3120;
+	margin-bottom: 0.75rem;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.case-file__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	margin-bottom: 0.85rem;
+	position: relative;
+	z-index: 3;
+}
+.case-file__chip {
+	font-size: 0.62rem;
+	letter-spacing: 0.04em;
+	background: #fff7e0;
+	border: 1px solid rgba(40, 28, 14, 0.3);
+	color: #5a472c;
+	padding: 0.1rem 0.45rem;
+	border-radius: 999px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+.case-file__chip::before {
+	content: "#";
+	opacity: 0.5;
+}
+
+.case-file__foot {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 1px dashed rgba(40, 28, 14, 0.35);
+	padding-top: 0.5rem;
+	font-size: 0.65rem;
+	color: #6a543180;
+	color: #6a5431;
+}
+.case-file__open-label {
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	color: oklch(0.5 0.22 var(--hue));
+	opacity: 0;
+	transform: translateX(-4px);
+	transition: opacity 0.25s, transform 0.25s;
+}
+.case-file:hover .case-file__open-label {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.case-file__paper { transition: none; }
+}
