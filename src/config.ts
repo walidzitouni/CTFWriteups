@@ -65,7 +65,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/avatar.png",
+	avatar: "/avatar.png",
 	name: "Daryx",
 	bio: "Red Team Engineer & Offensive Security researcher. By day I harden systems — by night I collect flags like specimens.",
 	links: [
