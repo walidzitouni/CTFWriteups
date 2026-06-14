@@ -2,6 +2,7 @@
 title: "HTB: Reactor"
 published: 2026-05-24
 description: "Easy Linux box — unauthenticated Next.js dashboard to React2Shell RCE (CVE-2025-55182), SQLite credential looting, and root via a Node.js --inspect debug port."
+image: "/covers/htb-reactor.png"
 tags: ["HTB", "Linux", "Web", "RCE", "Next.js", "CVE", "Privilege Escalation", "Node.js"]
 category: Offensive Security
 draft: false

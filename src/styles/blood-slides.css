@@ -1,0 +1,207 @@
+/* ============================================================
+   "Blood slide box" — the post list as glass microscope slides
+   resting in a walnut specimen box (Dexter-style). Self-contained.
+   ============================================================ */
+
+.slide-box {
+	position: relative;
+	border-radius: 12px;
+	background-image: url("/board/wood.png");
+	background-size: cover;
+	padding: 14px; /* wood frame thickness */
+	box-shadow:
+		0 18px 44px rgba(0, 0, 0, 0.55),
+		inset 0 0 0 2px rgba(255, 255, 255, 0.06),
+		inset 0 0 22px rgba(0, 0, 0, 0.6);
+	margin-bottom: 1rem;
+}
+
+/* engraved brass nameplate */
+.slide-box__plate {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	width: fit-content;
+	margin: 0.25rem auto 0.9rem;
+	padding: 0.35rem 1.1rem;
+	border-radius: 4px;
+	font-family: var(--font-mono, monospace);
+	font-size: 0.72rem;
+	letter-spacing: 0.22em;
+	color: #2a1d0c;
+	background: linear-gradient(180deg, #e8c879, #b8893f 55%, #d8b15f);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.6),
+		inset 0 -2px 4px rgba(0, 0, 0, 0.35),
+		0 2px 5px rgba(0, 0, 0, 0.5);
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.slide-box__plate .dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #7a0d0d;
+	box-shadow: 0 0 6px #b3121c;
+}
+
+/* velvet interior tray that holds the slides */
+.slide-box__tray {
+	border-radius: 8px;
+	padding: 1.1rem 1rem;
+	background:
+		radial-gradient(ellipse at 50% 0%, #4a0c14, #2a0509 70%, #1a0306);
+	box-shadow:
+		inset 0 0 30px rgba(0, 0, 0, 0.85),
+		inset 0 2px 0 rgba(0, 0, 0, 0.6);
+	display: flex;
+	flex-direction: column;
+	gap: 0.9rem;
+}
+
+/* a slot/groove the slide sits in */
+.slide-slot {
+	position: relative;
+	padding: 4px 0;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+.slide-slot:last-child { border-bottom: none; }
+
+/* ---- The glass slide ----------------------------------------------- */
+.blood-slide {
+	position: relative;
+	display: grid;
+	grid-template-columns: 4.75rem 6.5rem 1fr;
+	align-items: stretch;
+	min-height: 5rem;
+	border-radius: 6px;
+	overflow: hidden;
+	background:
+		linear-gradient(180deg, rgba(228, 240, 244, 0.18), rgba(150, 175, 185, 0.07));
+	border: 1px solid rgba(255, 255, 255, 0.22);
+	box-shadow:
+		0 7px 16px rgba(0, 0, 0, 0.55),
+		inset 0 1px 0 rgba(255, 255, 255, 0.3),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+	transform: rotate(var(--rot, 0deg));
+	transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.28s, filter 0.28s;
+	backdrop-filter: blur(1.5px);
+}
+.blood-slide:hover {
+	transform: rotate(0deg) translateX(14px) scale(1.012);
+	box-shadow:
+		0 12px 28px rgba(0, 0, 0, 0.6),
+		0 0 0 1px oklch(0.6 0.2 var(--hue) / 0.55),
+		0 0 26px oklch(0.55 0.22 var(--hue) / 0.4),
+		inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* frosted etched label */
+.blood-slide__label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.15rem;
+	background: linear-gradient(135deg, #eef1f2, #cdd5d7);
+	border-right: 1px solid rgba(255, 255, 255, 0.4);
+	color: #2a2a2e;
+	font-family: var(--font-mono, monospace);
+	font-size: 0.6rem;
+	letter-spacing: 0.05em;
+	text-align: center;
+	box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.5);
+}
+.blood-slide__label b { font-size: 0.72rem; color: #7a0d0d; }
+
+/* blood specimen */
+.blood-slide__smear {
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.55));
+	transition: filter 0.28s, transform 0.28s;
+}
+.blood-slide:hover .blood-slide__smear {
+	filter: brightness(1.18) saturate(1.25) drop-shadow(0 2px 5px rgba(0, 0, 0, 0.6));
+	transform: scale(1.04);
+}
+
+/* slide body / etched text */
+.blood-slide__body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.25rem;
+	padding: 0.5rem 0.9rem 0.5rem 0.25rem;
+	min-width: 0;
+}
+.blood-slide__title {
+	font-family: var(--font-mono, monospace);
+	font-weight: 700;
+	font-size: 0.95rem;
+	line-height: 1.2;
+	color: #f4ecec;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7), 0 0 1px rgba(255, 255, 255, 0.25);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.blood-slide:hover .blood-slide__title { color: #fff; }
+.blood-slide__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.45rem;
+	font-family: var(--font-mono, monospace);
+	font-size: 0.62rem;
+	color: rgba(255, 210, 210, 0.55);
+}
+.blood-slide__cat {
+	color: oklch(0.78 0.16 var(--hue));
+	border: 1px solid oklch(0.6 0.18 var(--hue) / 0.5);
+	padding: 0 0.35rem;
+	border-radius: 3px;
+}
+.blood-slide__tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	margin-top: 0.1rem;
+}
+.blood-slide__chip {
+	font-family: var(--font-mono, monospace);
+	font-size: 0.56rem;
+	color: rgba(255, 235, 235, 0.65);
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	padding: 0.02rem 0.4rem;
+	border-radius: 999px;
+}
+.blood-slide__chip::before { content: "#"; opacity: 0.5; }
+
+/* moving glass glare */
+.blood-slide__glare {
+	position: absolute;
+	top: 0;
+	left: -40%;
+	width: 35%;
+	height: 100%;
+	background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+	transform: skewX(-18deg);
+	transition: left 0.5s ease;
+	pointer-events: none;
+}
+.blood-slide:hover .blood-slide__glare { left: 130%; }
+
+@media (max-width: 520px) {
+	.blood-slide { grid-template-columns: 3.5rem 4.5rem 1fr; }
+	.blood-slide__tags { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.blood-slide,
+	.blood-slide__glare,
+	.blood-slide__smear { transition: none; }
+}
