@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const out = resolve(__dirname, "../src/assets/images/avatar.png");
+// Written to /public so it is served at a stable, unhashed URL (/avatar.png).
+const out = resolve(__dirname, "../public/avatar.png");
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
   <defs>
