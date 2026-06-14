@@ -1,5 +1,5 @@
 ---
-// Mouse trail particle effect - purple themed to match site
+// Mouse trail particle effect - tracks the site --hue (red theme)
 ---
 
 <canvas id="mouse-trail-canvas"></canvas>
@@ -52,7 +52,7 @@ function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Get the hue from the CSS variable
-  const hue = getComputedStyle(document.documentElement).getPropertyValue('--hue').trim() || '280';
+  const hue = getComputedStyle(document.documentElement).getPropertyValue('--hue').trim() || '18';
 
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
