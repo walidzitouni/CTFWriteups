@@ -1,74 +1,80 @@
-// Generates an ORIGINAL menacing red-on-black cat avatar (theme-matched,
-// no copied artwork). Run: node scripts/gen-avatar.mjs
+// Generates an ORIGINAL black-samurai-on-red avatar (generic subject, no copied
+// artwork). Run: node scripts/gen-avatar.mjs
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// Written to /public so it is served at a stable, unhashed URL (/avatar.png).
+// Served at a stable, unhashed URL (/avatar.png).
 const out = resolve(__dirname, "../public/avatar.png");
 
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
   <defs>
-    <radialGradient id="bg" cx="0.5" cy="0.4" r="0.85">
-      <stop offset="0" stop-color="#1a0405"/>
-      <stop offset="1" stop-color="#050304"/>
+    <radialGradient id="bg" cx="0.5" cy="0.4" r="0.9">
+      <stop offset="0" stop-color="#d11a1a"/>
+      <stop offset="0.7" stop-color="#a81212"/>
+      <stop offset="1" stop-color="#7e0c0c"/>
     </radialGradient>
-    <radialGradient id="fur" cx="0.5" cy="0.42" r="0.62">
-      <stop offset="0" stop-color="#ff3b34"/>
-      <stop offset="0.65" stop-color="#e01616"/>
-      <stop offset="1" stop-color="#9c0d0d"/>
-    </radialGradient>
-    <radialGradient id="vig" cx="0.5" cy="0.45" r="0.62">
-      <stop offset="0.62" stop-color="#000000" stop-opacity="0"/>
-      <stop offset="1" stop-color="#000000" stop-opacity="0.7"/>
-    </radialGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#140909"/>
+      <stop offset="1" stop-color="#070404"/>
+    </linearGradient>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.12"/></feComponentTransfer>
+    </filter>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
   </defs>
 
   <rect width="600" height="600" fill="url(#bg)"/>
+  <rect width="600" height="600" filter="url(#paper)" opacity="0.5" style="mix-blend-mode:multiply"/>
 
-  <!-- red cat (head, ears, body) -->
-  <g fill="url(#fur)">
-    <path d="M170 92 L256 240 L118 214 Z"/>
-    <path d="M430 92 L344 240 L482 214 Z"/>
-    <ellipse cx="300" cy="300" rx="168" ry="152"/>
-    <path d="M112 600 C133 466 226 426 300 426 C374 426 467 466 488 600 Z"/>
+  <g fill="url(#ink)">
+    <!-- katana blade (behind body, up-left) -->
+    <path d="M330 470 L312 462 L120 92 L138 86 Z"/>
+    <!-- horns / kuwagata -->
+    <path d="M262 150 C236 116 196 92 198 50 C214 78 248 116 280 142 Z"/>
+    <path d="M338 150 C364 116 404 92 402 50 C386 78 352 116 320 142 Z"/>
+    <!-- helmet dome -->
+    <ellipse cx="300" cy="150" rx="74" ry="62"/>
+    <!-- small center crest -->
+    <path d="M300 92 L290 150 L310 150 Z"/>
+    <!-- neck guard / shikoro (flared, stepped) -->
+    <path d="M232 168 L368 168 L398 252 L202 252 Z"/>
+    <!-- face mask band -->
+    <rect x="244" y="158" width="112" height="44" rx="10"/>
+    <!-- shoulders + torso -->
+    <path d="M300 232 C246 238 214 262 206 312
+             C150 322 108 360 102 432 L102 600 L498 600 L498 432
+             C492 360 450 322 394 312 C386 262 354 238 300 232 Z"/>
+    <!-- katana hilt over body -->
+    <path d="M326 470 L300 520 L320 528 L346 478 Z"/>
   </g>
 
-  <!-- inner ears -->
-  <g fill="#7a0a0a">
-    <path d="M188 132 L242 228 L158 198 Z"/>
-    <path d="M412 132 L358 228 L442 198 Z"/>
+  <!-- armor lacing / plate lines -->
+  <g stroke="#3a0d0d" stroke-width="3" fill="none" opacity="0.8">
+    <path d="M150 360 H450"/>
+    <path d="M126 410 H474"/>
+    <path d="M120 462 H480"/>
+    <path d="M116 516 H484"/>
+    <path d="M300 360 V600"/>
+  </g>
+  <!-- tsuba (sword guard) -->
+  <ellipse cx="332" cy="468" rx="16" ry="6" fill="#2a0808" transform="rotate(-28 332 468)"/>
+  <!-- blade edge highlight -->
+  <path d="M330 470 L138 86" stroke="#7a1a1a" stroke-width="2" opacity="0.7"/>
+
+  <!-- glowing eyes -->
+  <g fill="#fff4cf" filter="url(#glow)">
+    <ellipse cx="278" cy="180" rx="15" ry="6" transform="rotate(-12 278 180)"/>
+    <ellipse cx="322" cy="180" rx="15" ry="6" transform="rotate(12 322 180)"/>
   </g>
 
-  <!-- angry brows -->
-  <g fill="#3a0303">
-    <path d="M196 252 L286 286 L282 302 L196 272 Z"/>
-    <path d="M404 252 L314 286 L318 302 L404 272 Z"/>
-  </g>
-
-  <!-- eyes -->
-  <ellipse cx="232" cy="294" rx="43" ry="17" transform="rotate(-16 232 294)" fill="#060000"/>
-  <ellipse cx="368" cy="294" rx="43" ry="17" transform="rotate(16 368 294)" fill="#060000"/>
-  <circle cx="240" cy="292" r="4" fill="#ff5a4a" opacity="0.8"/>
-  <circle cx="360" cy="292" r="4" fill="#ff5a4a" opacity="0.8"/>
-
-  <!-- nose + mouth -->
-  <path d="M300 330 L281 352 L319 352 Z" fill="#180101"/>
-  <path d="M300 352 L300 376 M300 376 C300 392 274 394 260 386 M300 376 C300 392 326 394 340 386"
-        stroke="#180101" stroke-width="5" fill="none" stroke-linecap="round"/>
-
-  <!-- whiskers -->
-  <g stroke="#ff9a92" stroke-width="3" stroke-linecap="round" opacity="0.85" fill="none">
-    <path d="M250 360 L108 332"/>
-    <path d="M250 372 L104 374"/>
-    <path d="M250 384 L116 414"/>
-    <path d="M350 360 L492 332"/>
-    <path d="M350 372 L496 374"/>
-    <path d="M350 384 L484 414"/>
-  </g>
-
-  <rect width="600" height="600" fill="url(#vig)"/>
+  <rect width="600" height="600" fill="none"/>
 </svg>`;
 
 await sharp(Buffer.from(svg)).png().toFile(out);
