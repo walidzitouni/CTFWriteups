@@ -7,6 +7,8 @@ category: TryHackMe
 draft: false
 ---
 
+![Challenge Homepage](../../assets/images/Screenshot2026-08-06000212.png)
+
 
 **Platform:** TryHackMe  
 **Machine Name:** Services  
