@@ -1,6 +1,6 @@
 ---
 title: "Services"
-published: 2025-06-12
+published: 2026-08-06
 description: "AS-REP Roasting j.rock, cracking Serviceworks1, then Server Operators abuse to hijack ADWS service for SYSTEM shell"
 tags: ["Active Directory", "AS-REP Roasting", "Kerberos", "Windows", "Privesc"]
 category: TryHackMe
