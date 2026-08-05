@@ -7,10 +7,6 @@ category: TryHackMe
 draft: false
 ---
 
-# AD Machine 1 — Services (services.local)
-
-
-![[Pasted image 20260805082658.png]]
 
 **Platform:** TryHackMe  
 **Machine Name:** Services  
@@ -21,7 +17,7 @@ draft: false
 **Working Directory:** `~/services4`  
 **Date:** 2025-06-12
 
----
+
 
 ## Tags
 
