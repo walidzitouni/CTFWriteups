@@ -370,13 +370,6 @@ The operation completed successfully.
 
 Then downloaded both back to my attacking machine through the Evil-WinRM session (typo and all — muscle memory fails occasionally):
 
-```powershell
-dowload system
-```
-
-```
-The term 'dowload' is not recognized as the name of a cmdlet, function, script file, or operable program...
-```
 
 ```powershell
 download system
