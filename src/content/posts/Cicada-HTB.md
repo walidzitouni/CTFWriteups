@@ -7,6 +7,8 @@ category: HackTheBox
 draft: false
 ---
 
+![Challenge Homepage](../../assets/images/Cicada.png)
+
 > [!info] Machine Info
 > - **Target:** `10.129.56.23` (`CICADA-DC.cicada.htb`)
 > - **Domain:** `cicada.htb`
